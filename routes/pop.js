@@ -1,3 +1,7 @@
+/*
+This defines and implements the Mongopop API.
+*/
+
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var DB = require('../javascripts/db');
