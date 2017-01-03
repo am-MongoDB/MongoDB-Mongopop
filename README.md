@@ -8,8 +8,9 @@ A web tool to populate a [MongoDB Atlas](https://cloud.mongo.com) instance with 
 mkdir mongopop
 git clone https://github.com/andrewjamesmorgan/mongopop.git
 cd mongopop
-npm install
-npm start
+npm run install-all
+npm run tsc:w
+npm run express
 ```
 
 Browse to `http://localhost:3000/`
