@@ -7,8 +7,11 @@
 A web tool to populate a [MongoDB Atlas](https://cloud.mongo.com) instance with sample data (fetches datasets from [Mockaroo](https://www.mockaroo.com)).
 
 Includes:
-* Express Restful API
-* Angular2 web client
+
+- Express Restful API
+- Angular2 web client
+- MongoDB Node.js driver use
+- Connections to MongoDB Atlas
 
 ## Usage
 
