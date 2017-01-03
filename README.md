@@ -4,7 +4,7 @@ A web tool to populate a [MongoDB Atlas](https://cloud.mongo.com) instance with 
 
 ## Usage
 
-```
+```bash
 mkdir mongopop
 git clone https://github.com/andrewjamesmorgan/mongopop.git
 cd mongopop
