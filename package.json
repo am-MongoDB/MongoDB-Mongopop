@@ -3,7 +3,7 @@
   "description": "Adds data to MongoDB Atlas or other MongoDB databases",
   "author": "Andrew Morgan andrew.morgan@mongodb.com",
   "version": "0.0.1",
-  "private": true,
+  "private": false,
   "scripts": {
     "start": "cd public && npm run tsc && cd .. && node ./bin/www",
     "debug": "cd public && npm run tsc && cd .. && node-debug ./bin/www",
