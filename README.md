@@ -28,3 +28,4 @@ Browse to `http://localhost:3000/` (or to the IP address or hostname specified i
 * Add comments
 * Add React web client
 * Add Amazon Alexa client
+* Consider AWS Lambda
