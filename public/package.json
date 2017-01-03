@@ -1,6 +1,6 @@
 {
   "name": "MongoPop",
-  "version": "2.0.0",
+  "version": "0.1.1",
   "description": "Mongopop client - add data sets and run traffic on MongoDB",
   "scripts": {
     "start": "tsc && concurrently \"tsc -w\" ",
@@ -10,7 +10,7 @@
     "typings": "typings"
   },
   "keywords": [],
-  "author": "",
+  "author": "Andrew Morgan",
   "license": "ISC",
   "dependencies": {
     "@angular/common": "2.0.0-rc.6",
@@ -36,6 +36,7 @@
     "typescript": "^1.8.10",
     "typings": "^1.0.4",
     "canonical-path": "0.0.2",
+    "http-server": "^0.9.0",
     "lodash": "^4.11.1",
     "rimraf": "^2.5.2"
   },
