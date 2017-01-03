@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+// The only required route is for the calls to the mongopop API
 //var routes = require('./routes/index');
 var pop = require('./routes/pop');
 
