@@ -1,0 +1,12 @@
+<h2>Count Documents</h2>
+<p>
+	Collection name:
+	<input #CountCollName id="count-collection-name" type="text" value="{{MongoDBCollectionName}}">
+</p>
+<p>
+	<button (click)="countDocs(CountCollName.value)">Count Docs</button>
+</p>
+<p>
+	<span class="successMessage">{{DocumentCount}}</span>
+	<span class="errorMessage">{{CountDocError}}</span>
+</p>

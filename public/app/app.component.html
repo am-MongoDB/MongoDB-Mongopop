@@ -1,0 +1,65 @@
+<h1>Welcome to MongoPop</h1>
+<div>
+	<p>
+		The IP address of the server running MongoPop is {{serverIP}}, if using <a href="https://cloud.mongodb.com" name="MongoDB Atlas" target="_blank">MongoDB Atlas</a>, please make sure you've added this to your IP Whitelist unless you have VPC peering configured.
+	</p>
+</div>
+
+<div>
+	<p>
+		Connect String provided by MongoDB Atlas:
+		<input #MongoDBBaseString id="MongoDB-base-string" value="{{dBInputs.MongoDBBaseURI}}" (keyup)="setBaseURI(MongoDBBaseString.value)" (change)="setBaseURI(MongoDBBaseString.value)"/> 
+	</p>
+	<div *ngIf="MongoDBUser">
+		<p>
+			Password for user {{MongoDBUser}}: 
+			<input #MongoDBPassword id="MongoDB-password" value="{{dBInputs.MongoDBUserPassword}}" type="password" (keyup)="setPassword(MongoDBPassword.value)" (change)="setPassword(MongoDBPassword.value)"/> 
+		</p>
+	</div>
+	<p>
+		Preferred database name: 
+		<input #MongoDBDBName id="MongoDB-db-name" value="{{dBInputs.MongoDBDatabaseName}}" (keyup)="setDBName(MongoDBDBName.value)" (change)="setDBName(MongoDBDBName.value)"/> 
+	</p>
+	<p>
+		Socket (operation) timeout in seconds: 
+		<input #SocketTimeout id="socket-timeout" value="{{dBInputs.MongoDBSocketTimeout}}" type="number" min="1" max="1000" (change)="setMongoDBSocketTimeout(SocketTimeout.value)"/> 
+	</p>
+	<p>
+		Connection Pool size: 
+		<input #ConnectionPoolSize id="connection-pool-size" value="{{dBInputs.MongoDBConnectionPoolSize}}" type="number" min="1" max="1000" (change)="setMongoDBConnectionPoolSize(ConnectionPoolSize.value)"/> 
+	</p>
+	<p>
+		MongoDB URI: {{dBURI.MongoDBURIRedacted}}
+		<button (click)="showPassword(true)">Show Password</button>
+	</p>
+	<div>
+		<my-add
+			[dataService]="dataService"
+			[MongoDBCollectionName]="MongoDBCollectionName"
+			(onCollection)="onCollection($event)">
+		>
+		</my-add>
+	</div>
+	<div>
+		<my-count
+			[dataService]="dataService"
+			[MongoDBCollectionName]="MongoDBCollectionName"
+			(onCollection)="onCollection($event)">
+		</my-count>
+	</div>
+	<div *ngIf="DataToPlayWith"> 
+		<my-update
+			[dataService]="dataService"
+			[MongoDBCollectionName]="MongoDBCollectionName"
+			(onCollection)="onCollection($event)">
+		</my-update>
+	</div>
+	<div>
+		<my-sample
+			[dataService]="dataService"
+			[MongoDBCollectionName]="MongoDBCollectionName"
+			(onSample)="onSample($event)"
+			(onCollection)="onCollection($event)">
+		</my-sample>
+	</div>
+</div>

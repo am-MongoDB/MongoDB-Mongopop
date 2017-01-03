@@ -1,0 +1,32 @@
+{
+  "name": "mongopop",
+  "description": "Adds data to MongoDB Atlas or other MongoDB databases",
+  "author": "Andrew Morgan andrew.morgan@mongodb.com",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "cd public && npm run tsc && cd .. && node ./bin/www",
+    "debug": "cd public && npm run tsc && cd .. && node-debug ./bin/www",
+    "tsc": "cd public && npm run tsc",
+    "tsc:w": "cd public && npm run tsc:w",
+    "express": "node ./bin/www",
+    "express-debug": "node-debug ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "~1.15.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.2.0",
+    "ee-first": "^1.1.1",
+    "ejs": "^2.5.2",
+    "express": "^4.13.4",
+    "external-ip": "^0.2.4",
+    "jade": "~1.11.0",
+    "methods": "^1.1.2",
+    "mongodb": "^2.2.5",
+    "morgan": "~1.7.0",
+    "pug": "^0.1.0",
+    "request": "^2.74.0",
+    "serve-favicon": "~2.3.0",
+    "tsc": "^1.20150623.0"
+  }
+}

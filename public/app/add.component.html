@@ -1,0 +1,29 @@
+<h2>Add Documents</h2>
+<p>
+	Collection name: 
+	<input #MongoDBCollName id="MongoDB-collection-name" value="{{MongoDBCollectionName}}"/> 
+	<br/>
+	{{MongoDBCollectionName}}	
+</p>
+<p>
+	URL to Fetch Document Array: 
+	<input #DocURL id="MongoDB-document-url" value="{{MockarooURL}}"/> 
+</p>
+<p>
+	1,000s of Documents to Add: 
+	<input #DocCount id="MongoDB-document-url" value="{{docsToAdd}}" type="number" min="0" max="1000"/> 
+</p>
+<p>
+	Documents should be unique:
+	<input #Unique type="checkbox" name="unique-docs" (click)="dummy=0"/>
+</p>
+<div *ngIf="Unique.checked">
+			WARNING: Requiring all documents to be unique will slow things down
+</div>
+<p>
+	<button (click)="addDocs(MongoDBCollName.value, DocURL.value, DocCount.value, Unique.checked)">Add Docs</button>
+	<br/>
+	<br/>
+	<span class="errorMessage"> {{AddDocError}}</span>
+	<span class="successMessage"> {{AddDocResult}}</span>
+</p>

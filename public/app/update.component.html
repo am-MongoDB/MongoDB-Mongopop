@@ -1,0 +1,24 @@
+<h2>Bulk Updates</h2>
+<p>
+	Collection name:
+	<input #UpdateCollName id="update-collection-name" type="text" value="{{MongoDBCollectionName}}">
+</p>
+<p>
+	Pattern to match:
+	<input #MatchPattern id="match-pattern" type="text" size="50" value='{"field-name": "value"}' class="json"/>
+</p>
+<p>
+	Change to apply:
+	<input #UpdatePattern id="update-pattern" type="text" size="50" value='{"$set":{"mongopopComment": "MongoPop has been here"}, "$inc":{"mongopopCounter": 1}}' class="json"/>
+</p>
+<p>
+	How many times should this be run (concurrently)?:
+	<input #UpdateThreads id="update-threads" type="number" min="1" max="100" value="1"/>
+</p>
+<p>
+	<button (click)="updateDocs(UpdateCollName.value, MatchPattern.value, UpdatePattern.value, UpdateThreads.value)">Update Docs</button>
+</p>
+<p>
+	<span class="errorMessage"> {{JSONError}} </span>
+	<span class="successMessage">{{UpdateDocResult}}</span>
+</p>
