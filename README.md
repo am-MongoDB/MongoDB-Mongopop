@@ -13,5 +13,5 @@ npm run tsc:w
 npm run express
 ```
 
-Browse to `http://localhost:3000/` (or to the IP address or hostname specified in `public/app/app.component.ts`
+Browse to `http://localhost:3000/` (or to the IP address or hostname specified in `public/app/app.component.ts`)
 
