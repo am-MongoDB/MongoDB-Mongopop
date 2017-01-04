@@ -10,9 +10,9 @@
 		Connect String provided by MongoDB Atlas:
 		<input #MongoDBBaseString id="MongoDB-base-string" value="{{dBInputs.MongoDBBaseURI}}" (keyup)="setBaseURI(MongoDBBaseString.value)" (change)="setBaseURI(MongoDBBaseString.value)"/> 
 	</p>
-	<div *ngIf="MongoDBUser">
+	<div *ngIf="dBInputs.MongoDBUser">
 		<p>
-			Password for user {{MongoDBUser}}: 
+			Password for user {{dBInputs.MongoDBUser}}: 
 			<input #MongoDBPassword id="MongoDB-password" value="{{dBInputs.MongoDBUserPassword}}" type="password" (keyup)="setPassword(MongoDBPassword.value)" (change)="setPassword(MongoDBPassword.value)"/> 
 		</p>
 	</div>
