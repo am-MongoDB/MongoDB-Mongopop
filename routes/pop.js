@@ -3,13 +3,13 @@ Defines and implements the Mongopop Restful API.
 */
 
 var MongoClient	= require('mongodb').MongoClient;
-var getIP 		= require('external-ip')();
-var request 	= require("request");
-var express 	= require('express');
-var router 		= express.Router();
-const util 		= require('util');
+var getIP = require('external-ip')();
+var request = require("request");
+var express = require('express');
+var router 	= express.Router();
+const util 	= require('util');
 
-var DB 			= require('../javascripts/db');
+var DB = require('../javascripts/db');
 
 var publicIP; // IP address of the server running the Mongopop service
 var title = "MongoPop – Populate your MongoDB (Atlas) Database"
@@ -301,10 +301,26 @@ router.post('/sampleDocs', function(req, res, next) {
 
 router.post('/countDocs', function(req, res, next) {
 
+	/* Request from client to count the number of documents in a 
+	collection; the request should be of the form:
+
+	{
+		MongoDBURI: string; // Connect string for MongoDB instance
+		collectionName: string;
+	}
+
+	The response will contain:
+
+	{
+		success: boolean;	
+		count: number;		// The number of documents in the collection
+		error: string;
+	}
+	*/
+
 	var requestBody = req.body;
 	var database = new DB;
 
-	console.log("Received count request: " + JSON.stringify(req.body));
 	database.connect(requestBody.MongoDBURI)
 	.then(
 		function() {
@@ -312,7 +328,6 @@ router.post('/countDocs', function(req, res, next) {
 		},
 		function(err) {
 			console.log("Failed to connect to the database: " + err.message);
-			console.log(err);
 			return {
 					"success": false,
 					"count": 0,
@@ -321,7 +336,6 @@ router.post('/countDocs', function(req, res, next) {
 		})
 	.then(
 		function(count) {
-			console.log("Counted " + count + " documents");
 			return {
 					"success": true,
 					"count": count,
@@ -342,55 +356,6 @@ router.post('/countDocs', function(req, res, next) {
 			res.json(resultObject);
 		})
 })
-
-/*
-router.get('/countDocs', function(req, res, next) {
-
-	var MongoDBURI = req.MongoDBURI;
-	var collectionName = req.collectionName;
-
-	var database = new DB;
-
-	console.log("Received count (get) request: URI=" + MongoDBURI +
-		" collectionName=" + collectionName);
-	database.connect(MongoDBURI)
-	.then(
-		function() {
-			return database.countDocuments(collectionName)
-		},
-		function(err) {
-			console.log("Failed to connect to the database: " + err.message);
-			console.log(err);
-			return {
-					"success": false,
-					"count": 0,
-					"error": "Failed to connect to the database: " + err.message
-				};
-		})
-	.then(
-		function(count) {
-			console.log("Counted " + count + " documents");
-			return {
-					"success": true,
-					"count": count,
-					"error": ""
-				};
-		},
-		function(err) {
-			console.log("Failed to count the documents: " + err.message);
-			return {
-					"success": false,
-					"count": 0,
-					"error": "Failed to count the documents: " + err.message
-				};
-		})
-	.then(
-		function(resultObject) {
-			database.close();
-			res.json(resultObject);
-		})
-})
-*/
 
 function add(a, b) {
     return a + b;
@@ -398,13 +363,40 @@ function add(a, b) {
 
 router.post('/updateDocs', function(req, res, next) {
 
+	/* Request from client to apply an update to all documents in a collection
+	which match a given pattern; the request should be of the form:
+
+	{
+		MongoDBURI: string; 	// Connect string for MongoDB instance
+		collectionName: string;
+		matchPattern: Object;	// Filter to determine which documents should 
+								// be updated (e.g. '{"gender": "Male"}'')
+		dataChange: Object;		// Change to be applied to each matching change
+								// (e.g. '{"$set": {"mmyComment": "This is a 
+								// man"}, "$inc": {"myCounter": 1}}')
+		threads: number;		// How many times to repeat (in parallel) the operation
+	}
+
+	The response will contain:
+
+	{
+		success: boolean;	
+		count: number;			// The number of documents updated (should be the
+								// the number of documents matching the pattern
+								// multiplied by the number of threads)
+		error: string;
+	}
+	*/
+
 	var requestBody = req.body;
 	var database = new DB;
 
-	console.log("Received update request: " + JSON.stringify(req.body));
 	database.connect(requestBody.MongoDBURI)
 	.then(
 		function() {
+
+			// Build up a list of the operations to be performed
+
 			var taskList = []
 			for (var i=0; i < requestBody.threads; i++) {
 				taskList.push(database.updateCollection(
@@ -413,12 +405,13 @@ router.post('/updateDocs', function(req, res, next) {
 					requestBody.dataChange));
 			}
 
+			// Asynchronously run all of the operations
+
 			var allPromise = Promise.all(taskList);
 			allPromise
 			.then(
 				function(values) {
 					documentsUpdated = values.reduce(add, 0);
-					console.log("Sending response; " + documentsUpdated + " docs updated.");
 					return {
 								"success": true,
 								"count": documentsUpdated,
@@ -430,7 +423,7 @@ router.post('/updateDocs', function(req, res, next) {
 					return {
 								"success": false,
 								"count": 0,
-								"error": error.message
+								"error": "Error updating documents: " + error.message
 							};
 				}
 			)
@@ -446,9 +439,8 @@ router.post('/updateDocs', function(req, res, next) {
 			resultObject = {
 						"success": false,
 						"count": 0,
-						"error": error.message
+						"error": "Failed to connect to the database: " + error.message
 					};
-			console.log("About to send error response");
 			res.json(resultObject);	
 		}
 	);
