@@ -1,9 +1,16 @@
 {
-  "name": "mongopop",
-  "description": "Adds data to MongoDB Atlas or other MongoDB databases",
+  "//": "This contains the meta data to run the Mongopop application",
+
+  "name": "Mongopop",
+  "description": "Adds and manipulates data with MongoDB Atlas or other MongoDB databases",
   "author": "Andrew Morgan andrew.morgan@mongodb.com",
   "version": "0.0.1",
   "private": false,
+
+  "//": "The scripts are used to build, launch and debug both the server and",
+  "//": "client side apps. e.g. `npm run install-all` will install the client and",
+  "//": "server-side dependencies",
+
   "scripts": {
     "start": "cd public && npm run tsc && cd .. && node ./bin/www",
     "debug": "cd public && npm run tsc && cd .. && node-debug ./bin/www",
@@ -13,9 +20,12 @@
     "express-debug": "node-debug ./bin/www",
     "install-all": "npm install && cd public && npm install"
   },
+
+  "//": "The Node.js modules that are needed for the server-side application (the",
+  "//": "client-side dependencies are specified in `public/package.jsom`).",
+
   "dependencies": {
     "body-parser": "~1.15.1",
-    "cookie-parser": "~1.4.3",
     "debug": "~2.2.0",
     "ee-first": "^1.1.1",
     "ejs": "^2.5.2",

@@ -1,5 +1,8 @@
 extends layout
 
+//- This is used for rendering errors at the Express level (e.g. "404 Page not found")
+//- rather than application errors such as not being able to connect to the database.
+
 block content
   h1= message
   h2= error.status

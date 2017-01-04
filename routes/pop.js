@@ -1,5 +1,6 @@
 /*
-Defines and implements the Mongopop Restful API.
+Defines and implements the Mongopop Restful API by adding 'get' and 'post'
+routes to the router.
 */
 
 var MongoClient	= require('mongodb').MongoClient;

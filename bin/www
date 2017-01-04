@@ -1,10 +1,18 @@
 #!/usr/bin/env node
 
+/*
+  This is the script that must be run to start you Express application. This
+  is standard stuff and can mostly be left as-is.
+*/
+
 /**
  * Module dependencies.
  */
 
+
+// Location of the main express application module (`Mongopop/app.js`)
 var app = require('../app');
+
 var debug = require('debug')('test:server');
 var http = require('http');
 
