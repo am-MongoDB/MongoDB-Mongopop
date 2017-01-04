@@ -1,29 +1,36 @@
 /*
-This defines and implements the Mongopop API.
+Defines and implements the Mongopop Restful API.
 */
 
-var MongoClient = require('mongodb').MongoClient;
-var assert = require('assert');
-var DB = require('../javascripts/db');
-var getIP = require('external-ip')();
-var request = require("request");
-var express = require('express');
-var router = express.Router();
-const util = require('util');
+var MongoClient	= require('mongodb').MongoClient;
+var getIP 		= require('external-ip')();
+var request 	= require("request");
+var express 	= require('express');
+var router 		= express.Router();
+const util 		= require('util');
 
-var publicIP;
+var DB 			= require('../javascripts/db');
+
+var publicIP; // IP address of the server running the Mongopop service
 var title = "MongoPop – Populate your MongoDB (Atlas) Database"
 
 getIP(function (err, ip) {
+
+	// Returns the IP address of the server where the Mongopop service is running
+
     if (err) {
-        // every service in the list has failed 
+    	console.log("Failed to retrieve IP address: " + err.message);
         throw err;
     }
-    console.log(ip);
+    console.log("Mongopop API running on " + ip + ":3000");
     publicIP = ip;
 });
 
 router.get('/', function(req, res, next) {
+
+	// This isn't part of API and is just used from a browser or curl to test that
+	// "/pop" is being routed correctly.
+
 	var testObject = {
 		"AppName": "MongoPop",
 		"Version": 0.4
@@ -33,10 +40,18 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/ip', function(req, res, next) {
+
+	// Sends a response with the IP address of the server running this service.
+
 	res.json({"ip":publicIP});
 });
 
 function requestJSON(docURL) {
+
+	// Retrieve an array of example JSON documents from an external source
+	// e.g. mockaroo.com. Returns a promise that either resolves to the results 
+	// from the JSON service or rejects with the received error.
+
 	return new Promise(function (resolve, reject){
 		request({url: docURL, json: true}, function (error, response, body) {
 		    if (error || response.statusCode != 200) {
