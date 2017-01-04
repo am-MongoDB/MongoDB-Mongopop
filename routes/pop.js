@@ -46,19 +46,23 @@ router.get('/ip', function(req, res, next) {
 	res.json({"ip":publicIP});
 });
 
-function requestJSON(docURL) {
+function requestJSON(requestURL) {
 
 	// Retrieve an array of example JSON documents from an external source
 	// e.g. mockaroo.com. Returns a promise that either resolves to the results 
 	// from the JSON service or rejects with the received error.
 
 	return new Promise(function (resolve, reject){
-		request({url: docURL, json: true}, function (error, response, body) {
+
+		// Mockaroo can have problems with https - this is random sample data so by
+		// definition shouldn't need to be private
+		finalDocURL = requestURL.replace('https', 'http');
+
+		request({url: finalDocURL, json: true}, function (error, response, body) {
 		    if (error || response.statusCode != 200) {
 		    	console.log("Failed to fetch documents: " + error.message);
 		    	reject(error);
 		    } else {
-		    	console.log("Fetched documents");
 		    	resolve(body);
 		    }
 		})
@@ -67,53 +71,92 @@ function requestJSON(docURL) {
 
 router.post('/addDocs', function(req, res, next) {
 
+	/* Request from client to add a number of documents to a collection; the request
+	should be of the form:
+
+	{
+		MongoDBURI: string; // Connect string for MongoDB instance
+		collectionName: string; 
+		dataSource: string; // e.g. a Mockaroo.com URL to produce example docs
+		numberDocs: number; // How many (in thousands) documents sould be added
+		unique: boolean; 	// Whether each batch of 1,000 documents should be distinct
+							// from the others (much slower if set to true)
+	}
+
+	The response will contain:
+
+	{
+		success: boolean;	
+		count: number;		// How many documents were added (in thousands)
+		error: string;
+	}
+	*/
+
 	var requestBody = req.body;
 	var uniqueDocs = req.body.unique;
-	console.log("Received Post: " + JSON.stringify(req.body));
-
-	// Can be problems with https - this is random sample data so by
-	// definition shouldn't need to be private
-	docURL = requestBody.dataSource.replace('https', 'http');
-
 	var batchesCompleted = 0;
 	var database = new DB;
+	var docURL = requestBody.dataSource;
 
-	console.log("Just about to connect");
 	database.connect(requestBody.MongoDBURI)
 	.then(
 		function() {
 			if (uniqueDocs) {
+
+				// Need to fetch another batch of unique documents for each batch
+				// of 1,000 docs
+
 				for (i = 0; i < requestBody.numberDocs; i++) {
+					
+					// Fetch the example documents (based on the caller's source URI)
+
 					requestJSON(docURL)
 					.then(
 						function(docs) {
+
+							// The first function provided as a parameter to "then"
+							// is called if the promise is resolved successfully. The 
+							// "requestJSON" method returns the retrieved documents
+							// which the code in this function sees as the "docs"
+							// parameter. Write these docs to the database:
+
 							database.popCollection(requestBody.collectionName, docs)
 							.then(
 								function(results) {
-									console.log('Wrote Mock data batch');
 									batchesCompleted++;
 								},
 								function(error) {
+
+									// The second function provided as a parameter to "then"
+									// is called if the promise is rejected. "err" is set to 
+									// to the error passed by popCollection
+
 									database.close();
 									resultObject = {
 										"success": false,
 										"count": batchesCompleted,
 										"error": "Failed to write mock data: " + error.message
 									};
+
+									// Include "return" to end execution of this function
+
 									return res.json(resultObject);
 								}
 							)
 							.then(
 								function() {
-									console.log(batchesCompleted + ' batches completed out of ' + requestBody.numberDocs);
+
+									// If all off the batches have been (successfully) added
+									// then build and send the response.
+
 									if (batchesCompleted == requestBody.numberDocs) {
+										database.close();
 										console.log('Wrote all Mock data');
 											resultObject = {
 												"success": true,
 												"count": batchesCompleted,
 												"error": ""
 											};
-										database.close();
 										return res.json(resultObject);
 									}
 								}
@@ -131,14 +174,23 @@ router.post('/addDocs', function(req, res, next) {
 					)
 				}
 			} else {
-				// Fetch one set of sample data and then use for repeated writes
+				
+				// Fetch one set of sample data and then use for repeated batches of writes
+
 				requestJSON(docURL)
 				.then(
 					function(docs) {
+
+						// Build an array of popCollection calls (not being executed at this point)
+
 						var taskList = [];
 						for (i = 0; i < requestBody.numberDocs; i++) {
 							taskList.push(database.popCollection(requestBody.collectionName, docs))
 						}
+
+						// Promise.all executes all of the tasks in the provided array asynchronously (i.e.
+						// they can run in parallel).
+
 						var allPromise = Promise.all(taskList);
 						allPromise
 						.then(
@@ -155,7 +207,7 @@ router.post('/addDocs', function(req, res, next) {
 								database.close();
 								resultObject = {
 									"success": false,
-									"count": 0,
+									"count": 0, // If some writes succeeded then the real count may be > 0
 									"error": "Failed to write data: " + error.message
 								};
 								return res.json(resultObject);
@@ -187,10 +239,26 @@ router.post('/addDocs', function(req, res, next) {
 
 router.post('/sampleDocs', function(req, res, next) {
 
+	/* Request from client to read a sample of the documents from a collection; the request
+	should be of the form:
+
+	{
+		MongoDBURI: string; // Connect string for MongoDB instance
+		collectionName: string;
+		numberDocs: number; // How many documents should be in the result set
+	}
+
+	The response will contain:
+
+	{
+		success: boolean;	
+		documents: string;	// Sample of documents from collection
+		error: string;
+	}
+	*/
+
 	var requestBody = req.body;
 	var database = new DB;
-
-	console.log("Received sample request: " + JSON.stringify(req.body));
 	
 	database.connect(requestBody.MongoDBURI)
 	.then(
@@ -209,7 +277,6 @@ router.post('/sampleDocs', function(req, res, next) {
 		})
 	.then(
 		function(docs) {
-			console.log('Retrieved sample data');
 			return {
 					"success": true,
 					"documents": docs,
