@@ -6,6 +6,7 @@ import { Injectable, OnInit } 						from '@angular/core';
 import { Http, Response, Headers, RequestOptions } 	from '@angular/http';
 import { Observable, Subscription } 				from 'rxjs/Rx';
 
+require("digest-auth-request");
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
@@ -21,6 +22,20 @@ export class DataService {
 
 	private MongoDBURI: string;	// The URI to use when accessing the MongoDB database
 	private baseURL: string;	// The URL for the Mongopop service
+	private AtlasURI: string = "https://cloud.mongodb.com/api/atlas/v1.0/groups/GROUP_NAME/clusters";
+	private clusterName: string = "MongoPop";
+	private clusterStatus: string = "None";
+	private atlasUserName: string;
+	private atlasUserKey: string;
+	private atlasClusterType = {
+		name: "MongoPop",
+		providerSettings: {
+			instanceSizeName: "M10",
+			providerName: "AWS",
+			regionName: "US_EAST_1"
+		},
+		backupEnabled: false
+	}
 
 	constructor (private http: Http) {}
 
@@ -214,5 +229,61 @@ export class DataService {
 			return Observable.throw(error.toString() || ' Server error')
 		});
 	};
+
+	setAtlasURI(groupName: string)
+	{
+		/* 
+		Takes the MongoDB Atlas group name provided and combines it with the fixed base URI to
+		create the URI for this user's Atlas group.
+		*/
+
+		this.AtlasURI = this.AtlasURI.replace('GROUP_NAME', groupName);
+		console.log("Atlas URI: " + this.AtlasURI);
+	};
+
+	setAtlasUserName(userName: string)
+	{
+		this.atlasUserName = userName;
+	};
+
+	setAtlasUserKey(userKey: string)
+	{
+		this.atlasUserKey = userKey;
+	};
+
+	atlasSpinupRequest() : Observable<string> {
+		let postData = JSON.stringify(this.atlasClusterType);
+		var digestAuthRequest:any; 
+		let postReq = new digestAuthRequest('POST', this.AtlasURI, 'billy', 'goldie');
+		let obs:Observable<MongoReadResult> = Observable.create(observer => {
+				observer.onNext("Initiated Atlas cluster creation");
+				observer.onCompleted();
+			});
+/*
+		postReq.request(function(data:string) { 
+			obs.onNext("Initiated Atlas cluster creation");
+			obs.onCompleted();
+			})
+		},function(errorCode:number) { 
+			return Observable.throw("Failed to spin up Atlas cluster – code: " + errorCode);
+		}, postData);
+	}
+*/
 }
+	spinUpCluster() : Observable<string> {
+		if (this.clusterStatus==="None") {
+
+
+		return this.http.get(baseURL + "/ip")
+		.map(response => response.json().ip)
+		.catch((error:any) => Observable.throw(error.json().error || 'Server error'))
+
+
+		} else {
+			return Observable.throw("You already have a MongoPop Atlas cluster in state: " + this.clusterStatus);
+		}
+	}
+
+}
+
 
