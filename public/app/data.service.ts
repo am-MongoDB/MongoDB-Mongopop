@@ -20,6 +20,12 @@ export class DataService {
 
 	constructor (private http: Http) {}
 
+	fetchServerIP(baseURL: string) : Observable<string> {
+		return this.http.get(baseURL + "/ip")
+		.map(response => response.json().ip)
+		.catch((error:any) => Observable.throw(error.json().error || 'Server error'))
+	}
+
 	setMongoDBURI(MongoDBURI: string) {
 		this.MongoDBURI = MongoDBURI;
 	}

@@ -1,3 +1,9 @@
+<!--
+html template for the main component (AppComponent) of the Mongopop client app.
+Collects MongoDB connection information from the user and then passes it to the 
+sub-components.
+-->
+
 <h1>Welcome to MongoPop</h1>
 <div>
 	<p>
@@ -10,6 +16,8 @@
 		Connect String provided by MongoDB Atlas:
 		<input #MongoDBBaseString id="MongoDB-base-string" value="{{dBInputs.MongoDBBaseURI}}" (keyup)="setBaseURI(MongoDBBaseString.value)" (change)="setBaseURI(MongoDBBaseString.value)"/> 
 	</p>
+
+	<!-- Only ask for the password if the MongoDB URI has been changed from localhost -->
 	<div *ngIf="dBInputs.MongoDBUser">
 		<p>
 			Password for user {{dBInputs.MongoDBUser}}: 
@@ -33,6 +41,13 @@
 		<button (click)="showPassword(true)">Show Password</button>
 	</p>
 	<div>
+	
+		<!--
+			Placeholder for the `AddComponent`. Provide that component with the MongoDB connection and collection information.
+			AddComponent can trigger an ` event which will cause the `onCollection` function to be called (this is how child
+			components can pass information back to the parent). The `AddComponent` (`add.component.ts`) must set the 
+			component selector to <my-add> for it to be run in this element.
+		-->
 		<my-add
 			[dataService]="dataService"
 			[MongoDBCollectionName]="MongoDBCollectionName"
@@ -47,6 +62,11 @@
 			(onCollection)="onCollection($event)">
 		</my-count>
 	</div>
+
+	<!--
+	Only display the UpdateComponent if the user has already fetched sample documents (so that
+	they know what they can filter on and update)
+	-->
 	<div *ngIf="DataToPlayWith"> 
 		<my-update
 			[dataService]="dataService"

@@ -6,6 +6,8 @@ import 'rxjs/add/operator/catch';
 
 import {DataService}	from './data.service';
 
+// This component will be loaded into the <my-add> element of `app/app.component.html`
+
 @Component({
     selector: 'my-sample',
     templateUrl: 'app/sample.component.html',
@@ -17,8 +19,11 @@ export class SampleComponent implements OnInit {
 	SampleDocResult: string = "";
 	SampleDocError: string = "";
 
+	// Parameters sent down from the parent component (AppComponent)
 	@Input() dataService: DataService;
 	@Input() MongoDBCollectionName: string;
+
+	// Event emitters to pass changes back up to the parent component
 	@Output() onSample = new EventEmitter<boolean>();
 	@Output() onCollection = new EventEmitter<string>();
 
@@ -33,6 +38,7 @@ export class SampleComponent implements OnInit {
 		return json;
 	}
 
+	// Invoked from the component's html code
 	sampleDocs(CollName: string, NumberDocs: number) {
 		this.SampleDocResult = "";
 		this.SampleDocError = "";
@@ -41,8 +47,7 @@ export class SampleComponent implements OnInit {
 		this.dataService.sendSampleDoc(CollName, NumberDocs)
 		.subscribe(
 			results => {
-				console.log("Sent SampleDoc request, handling response");
-				console.log(JSON.stringify(results));
+				// Invoked if/when the observable is succesfully resolved
 				if (results.success) {
 					this.SampleDocResult = this.syntaxHighlight(results.documents);
 					this.MongoDBCollectionName = CollName;
@@ -53,6 +58,7 @@ export class SampleComponent implements OnInit {
 				}
 			},
 			error => {
+				// Invoked if/when the observable throws an error
 				this.SampleDocError = "Sample failed: " + error.toString;
 			}
 		);

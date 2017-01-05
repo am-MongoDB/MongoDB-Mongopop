@@ -6,6 +6,8 @@ import 'rxjs/add/operator/catch';
 
 import {DataService}	from './data.service';
 
+// This component will be loaded into the <my-add> element of `app/app.component.html`
+
 @Component({
     selector: 'my-update',
     templateUrl: 'app/update.component.html',
@@ -18,13 +20,17 @@ export class UpdateComponent implements OnInit {
 	JSONError: string = "";
 	UpdateDocResult: string = "";
 
+	// Parameters sent down from the parent component (AppComponent)
 	@Input() dataService: DataService;
 	@Input() MongoDBCollectionName: string;
+
+	// Event emitters to pass changes back up to the parent component
 	@Output() onCollection = new EventEmitter<string>();
 
 	ngOnInit() {
 		}
 
+	// Invoked from the component's html code
 	updateDocs(collName: string, matchPattern: string, dataChange: string, threads: number) {
 
 		this.UpdateDocResult = "";
@@ -33,6 +39,7 @@ export class UpdateComponent implements OnInit {
 		this.dataService.updateDBDocs(collName, matchPattern, dataChange, threads)
 		.subscribe(
 				data => {
+					// Invoked if/when the observable is succesfully resolved
 					if (data.success) {
 						this.UpdateDocResult = "Updates completed; updated " + data.count.toLocaleString() + " documents";
 						this.MongoDBCollectionName = collName;
@@ -43,6 +50,7 @@ export class UpdateComponent implements OnInit {
 					}
 				},
 				error => {
+					// Invoked if/when the observable throws an error
 					this.JSONError = "Update failed: " + error.toString;
 					this.UpdateDocResult = ""
 				},

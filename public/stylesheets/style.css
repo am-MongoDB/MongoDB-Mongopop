@@ -16,6 +16,9 @@ a {
 	color: red;
 }
 
+.warningMessage {
+	color: brown;
+}
 .successMessage {
 	color: green;
 }

@@ -1,4 +1,8 @@
-<h2>Add Documents</h2>
+<!--
+This component is included by AppComponent (app.component.html)
+-->
+
+<h2>Add New Documents</h2>
 <p>
 	Collection name: 
 	<input #MongoDBCollName id="MongoDB-collection-name" value="{{MongoDBCollectionName}}"/> 
@@ -18,7 +22,7 @@
 	<input #Unique type="checkbox" name="unique-docs" (click)="dummy=0"/>
 </p>
 <div *ngIf="Unique.checked">
-			WARNING: Requiring all documents to be unique will slow things down
+	<span class="warningMessage">WARNING: Requiring all documents to be unique will slow things down</span>
 </div>
 <p>
 	<button (click)="addDocs(MongoDBCollName.value, DocURL.value, DocCount.value, Unique.checked)">Add Docs</button>

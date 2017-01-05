@@ -1,5 +1,4 @@
 import { Component, OnInit, Injectable } 	from '@angular/core';
-import { Http, Response } 					from '@angular/http';
 import { Observable, Subscription } 		from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -7,15 +6,18 @@ import 'rxjs/add/operator/catch';
 import { DataService }						from './data.service';
 
 @Component({
+	// This component will be loaded into the <my-app> element of `../index.html`
     selector: 'my-app',
     templateUrl: 'app/app.component.html',
     styleUrls:  ['stylesheets/style.css']
 })
 
+// @Injectable means that dependencies can be implicitly added by including new objects
+// in the constructor parameter list.
 @Injectable()
 export class AppComponent implements OnInit { 
 	serverIP: string = "";
-	MongoDBURIRedacted = "";
+	MongoDBURIRedacted = "";	// The MongoDB URI but with the user password hidden
 	DataToPlayWith: boolean = false;
 	dBInputs = {MongoDBBaseURI: "mongodb://localhost:27017",
 				MongoDBDatabaseName: "mongopop",
@@ -27,24 +29,34 @@ export class AppComponent implements OnInit {
 
 	dBURI = {MongoDBURI: "Not set yet", MongoDBURIRedacted: "Not set yet"};
 
-	private baseURL = 'http://192.168.1.116:3000/pop/';
+	// Where to find the Mongopop API (would replace this with the public URL)
+	// private baseURL = 'http://192.168.1.116:3000/pop/';
+	private baseURL = 'http://localhost:3000/pop/';
 
-	constructor (private http: Http, private dataService: DataService) {}
+	constructor (private dataService: DataService) {}
 
+	// Called after the constructor
 	ngOnInit() {
-		this.fetchServerIP().subscribe(
+
+		// Find the IP address of the server hosting the Mongopop API.
+		// fetchServerIP returns an observable which we subscribe to and 
+		// await the results.
+		this.dataService.fetchServerIP(this.baseURL).subscribe(
 		results => {
+			// This code is invoked if/when the observable is resolved sucessfully
 			this.serverIP = results
+		},
+		error => {
+			// This code is executed if/when the observable throws an error.
+			console.log("Failed to find an IP address for " + this.baseURL +
+				"; will use 127.0.0.1 instead. Reason: " + error.toString);
 		});
+
+		// Store the calculated MongoDB URI both in this object and the
+		// dataService sub-object.
 		this.dBURI = this.dataService.calculateMongoDBURI(this.dBInputs);
 		this.dataService.setBaseURL(this.baseURL);
 	}
-
-	fetchServerIP() : Observable<string> {
-		return this.http.get(this.baseURL + "/ip")
-		.map(response => response.json().ip)
-		.catch((error:any) => Observable.throw(error.json().error || 'Server error'))
-	};
 
 	setMongoDBSocketTimeout(timeout: number) {
 		this.dBInputs.MongoDBSocketTimeout = timeout;
@@ -79,10 +91,17 @@ export class AppComponent implements OnInit {
 		}
 	}
 
+	// This is invoked when the sub-component (SampleComponent from
+	// sample.component.ts) emits an onSample event. The binding is created
+	// in app.component.html
 	onSample(haveSampleData: boolean) {
+		// Expose the UpdateComponent
 		this.DataToPlayWith = haveSampleData;
 	}
 
+	// This is invoked when a sub-component emits an onCollection event to indicate
+	// that the user has changes the collection within its form. The binding is 
+	// created in app.component.html
 	onCollection(CollName: string) {
 		this.MongoDBCollectionName = CollName;
 	}

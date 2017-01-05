@@ -19,7 +19,7 @@ Includes:
 mkdir mongopop
 git clone https://github.com/andrewjamesmorgan/mongopop.git
 cd mongopop
-npm run install-all
+npm install
 npm run tsc:w
 npm run express
 ```

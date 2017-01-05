@@ -6,7 +6,7 @@ import 'rxjs/add/operator/catch';
 
 import {DataService}	from './data.service';
 
-// Angular2 http requests with Observables
+// This component will be loaded into the <my-add> element of `app/app.component.html`
 
 @Component({
     selector: 'my-add',
@@ -22,13 +22,17 @@ export class AddComponent implements OnInit {
 	MockarooURL: string = "http://www.mockaroo.com/536ecbc0/download?count=1000&key=48da1ee0";
 	docsToAdd: number = 1;
 
+	// Parameters sent down from the parent component (AppComponent)
 	@Input() dataService: DataService;
 	@Input() MongoDBCollectionName: string;
+
+	// Event emitters to pass changes back up to the parent component
 	@Output() onCollection = new EventEmitter<string>();
 
 	ngOnInit() {
 		}
 
+	// Invoked from the component's html code
 	addDocs(CollName: string, DocURL: string, DocCount: number, Unique: boolean) {
 		this.AddDocResult = "";
 		this.AddDocError = "";
@@ -36,18 +40,20 @@ export class AddComponent implements OnInit {
 		this.dataService.sendAddDoc(CollName, DocURL, DocCount, Unique)
 		.subscribe(
 			results => {
-				console.log("Sent AddDocs request, handling response");
-				console.log(JSON.stringify(results));
-				console.log("Added " + results.count + " documents");
+				// Invoked if/when the observable is succesfully resolved
 				if (results.success) {
 					this.AddDocResult = 'Addded ' + results.count + ',000 documents';
 					this.MongoDBCollectionName = CollName;
+
+					// Let the parent component know that the collection name
+					// has been changed.
 					this.onCollection.emit(this.MongoDBCollectionName);
 				} else {
 					this.AddDocError = 'Error: ' + results.error;
 				}
 			},
 			error => {
+				// Invoked if/when the observable throws an error
 				this.AddDocError = "Add failed: " + error.toString;
 			}
 		);

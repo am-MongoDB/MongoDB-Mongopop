@@ -1,7 +1,6 @@
-/**
- * System configuration for Angular 2 samples
- * Adjust as necessary for your application needs.
- */
+/*
+ System configuration for Mongopop Angular 2 client app
+*/
 (function (global) {
   System.config({
     paths: {
@@ -10,7 +9,7 @@
     },
     // map tells the System loader where to look for things
     map: {
-      // our app is within the app folder
+      // The Mongopop app is within the app folder
       app: 'app',
 
       // angular bundles
@@ -30,16 +29,13 @@
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {
       app: {
+        // app/main.js (built from app/main.ts) is the entry point for the Mongopop client app
         main: './main.js',
         defaultExtension: 'js'
       },
       rxjs: {
         defaultExtension: 'js'
-      },
-//      'angular2-in-memory-web-api': {
-//        main: './index.js',
-//        defaultExtension: 'js'
-//      }
+      }
     }
   });
 })(this);
