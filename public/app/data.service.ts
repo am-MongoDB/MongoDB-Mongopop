@@ -1,3 +1,7 @@
+/*
+Service for clients to access the Mongopop and MongoDB Atlas web APIs
+*/
+
 import { Injectable, OnInit } 						from '@angular/core';
 import { Http, Response, Headers, RequestOptions } 	from '@angular/http';
 import { Observable, Subscription } 				from 'rxjs/Rx';
@@ -15,12 +19,13 @@ import { CountDocsRequest } 						from './CountDocsRequest';
 @Injectable()
 export class DataService {
 
-	private MongoDBURI: string;
-	private baseURL: string;
+	private MongoDBURI: string;	// The URI to use when accessing the MongoDB database
+	private baseURL: string;	// The URL for the Mongopop service
 
 	constructor (private http: Http) {}
 
 	fetchServerIP(baseURL: string) : Observable<string> {
+		// Ask the MongoPop API for its IP address
 		return this.http.get(baseURL + "/ip")
 		.map(response => response.json().ip)
 		.catch((error:any) => Observable.throw(error.json().error || 'Server error'))
@@ -36,41 +41,52 @@ export class DataService {
 
 	calculateMongoDBURI(dbInputs: any): {"MongoDBURI": string, "MongoDBURIRedacted": string}
 	{
-		console.log("calculating URI – Service Style!");
-		var MongoDBURI: string;
-		var MongoDBURIRedacted: string;
+		/* 
+		Returns the URI for accessing the database; if it's for MongoDB Atlas then include the password and
+		use the chosen database name rather than 'admin'. Also returns the redacted URI (with the password
+		masked).
+		*/
+		let MongoDBURI: string;
+		let MongoDBURIRedacted: string;
+
 		if (dbInputs.MongoDBBaseURI == "mongodb://localhost:27017") {
-			console.log("Still using localhost");
 			MongoDBURI = dbInputs.MongoDBBaseURI + "/" 
 			+ dbInputs.MongoDBDatabaseName + "?authSource=admin&socketTimeoutMS=" + dbInputs.MongoDBSocketTimeout*1000 + "&maxPoolSize=" + dbInputs.MongoDBConnectionPoolSize;
 			MongoDBURIRedacted = dbInputs.MongoDBBaseURI;
-			console.log(MongoDBURI);
 		} else {
-			console.log("Now using remote MongoDB");
+			// Can now assume that the URI is in the format provided by MongoDB Atlas
 			dbInputs.MongoDBUser = dbInputs.MongoDBBaseURI.split('mongodb://')[1].split(':')[0];
 			MongoDBURI = dbInputs.MongoDBBaseURI
 				.replace('admin', dbInputs.MongoDBDatabaseName)
-				.replace('PASSWORD', dbInputs.MongoDBUserPassword) + "&socketTimeoutMS=" + dbInputs.MongoDBSocketTimeout*1000 + "&maxPoolSize=" + dbInputs.MongoDBConnectionPoolSize;
+				.replace('PASSWORD', dbInputs.MongoDBUserPassword) + "&socketTimeoutMS=" + dbInputs.MongoDBSocketTimeout*1000
+					+ "&maxPoolSize=" + dbInputs.MongoDBConnectionPoolSize;
 			MongoDBURIRedacted = dbInputs.MongoDBBaseURI
 				.replace('admin', dbInputs.MongoDBDatabaseName)
 				.replace('PASSWORD', "**********") + 
 				+ "&socketTimeoutMS=" + dbInputs.MongoDBSocketTimeout*1000 + "&maxPoolSize=" + dbInputs.MongoDBConnectionPoolSize;
 		}
+
 		this.setMongoDBURI(MongoDBURI);
 		return({"MongoDBURI": MongoDBURI, 
 				"MongoDBURIRedacted": MongoDBURIRedacted});
 	}
 
 	tryParseJSON (jsonString: string): Object{
+
+		/*
+		Attempts to build an object from the supplied string. Raises an error if
+		the conversion fails (e.g. if it isn't valid JSON format).
+		*/
+
 	    try {
-	        var myObject = JSON.parse(jsonString);
+	        let myObject = JSON.parse(jsonString);
 
 	        if (myObject && typeof myObject === "object") {
 	            return myObject;
 	        }
 	    }
 	    catch (error) { 
-	    	var errorString = "Not valid JSON: " + error.message;
+	    	let errorString = "Not valid JSON: " + error.message;
 	    	console.log(errorString);
 	    	new Error(errorString);
 	    }
@@ -81,9 +97,8 @@ export class DataService {
 		let headers = new Headers({ 'Content-Type': 'application/json' });
 		let options = new RequestOptions({ headers: headers });
 
-		var docJSON = JSON.stringify(doc);
-		var url: string = this.baseURL + "updateDocs";
-		console.log("Sending updateDocs request: " + docJSON + "to" + url);
+		let docJSON = JSON.stringify(doc);
+		let url: string = this.baseURL + "updateDocs";
 
 		return this.http.post(url, doc, options)
 		.timeout(360000000, new Error('Timeout exceeded'))
@@ -95,26 +110,35 @@ export class DataService {
 
 	updateDBDocs (collName: string, matchPattern: string, dataChange: string, 
 			threads: number): Observable<MongoResult> {
+		
+		/*
+		Apply an update to all documents in a collection
+		which match a given pattern. Uses the MongoPop API.
+		Returns an Observable which either resolves to the results of the operation
+		or throws an error.
+		*/
+		let matchObject: Object;
+		let changeObject: Object
+
 		try {
-			var matchObject: Object = this.tryParseJSON(matchPattern);
+			matchObject = this.tryParseJSON(matchPattern);
 			}
 		catch (error) {
-			var errorString = "Match pattern: " + error.message;
+			let errorString = "Match pattern: " + error.message;
 	    	console.log(errorString);
 	    	return Observable.throw(errorString);
 		}
 		
 		try	{
-				var changeObject: Object = this.tryParseJSON(dataChange);
+			changeObject = this.tryParseJSON(dataChange);
 		}
 		catch (error) {
-			var errorString = "Data change: " + error.message;
+			let errorString = "Data change: " + error.message;
 	    	console.log(errorString);
 	    	return Observable.throw(errorString);
 		}
 
-		var updateDocsRequest = new UpdateDocsRequest (this.MongoDBURI, collName, matchObject, changeObject, threads);
-		console.log("About to send " + JSON.stringify(updateDocsRequest));
+		let updateDocsRequest = new UpdateDocsRequest (this.MongoDBURI, collName, matchObject, changeObject, threads);
 
 		return this.sendUpdateDocs(updateDocsRequest)
 		.map(results => {return results})
@@ -124,15 +148,17 @@ export class DataService {
 	}
 
 	sendCountDocs(CollName: string) : Observable<MongoResult> {
+
+		/*
+		Use the Mongopop API to count the number of documents in the specified
+		collection.
+		*/
+
 		let headers = new Headers({ 'Content-Type': 'application/json' });
-		let options = new RequestOptions({ headers: headers});
+		let options = new RequestOptions({headers: headers});
 		let countDocsRequest = new CountDocsRequest (this.MongoDBURI, CollName);
-
-		console.log("About to send " + JSON.stringify(countDocsRequest));
-
-		var docJSON = JSON.stringify(countDocsRequest);
-		var url: string = this.baseURL + "countDocs";
-		console.log("Sending countDocs request: " + docJSON + " to " + url);
+		let docJSON = JSON.stringify(countDocsRequest);
+		let url: string = this.baseURL + "countDocs";
 
 		return this.http.post(url, countDocsRequest, options)
 		.timeout(360000, new Error('Timeout exceeded'))
@@ -144,12 +170,20 @@ export class DataService {
 
 	sendAddDoc(CollName:string, DocURL: string, DocCount: number, 
 			Unique: boolean) : Observable<MongoResult> {
+
+		/*
+		Use the Mongopop API to add the requested number (in thousands) of documents
+		to the collection. The documents are fetched from a service such as Mockaroo 
+		using the DocURL.
+		Returns an Observable which either resolves to the results of the operation
+		or throws an error.
+		*/
+
 		let headers = new Headers({ 'Content-Type': 'application/json' });
 		let options = new RequestOptions({ headers: headers });
 		let addDocsRequest = new AddDocsRequest (this.MongoDBURI, CollName, DocURL, DocCount, Unique);
 		let docJSON = JSON.stringify(addDocsRequest);
 		let url: string = this.baseURL + "addDocs";
-		console.log("Sending addDocs request: " + docJSON + "to" + url);
 
 		return this.http.post(url, addDocsRequest, options)
 		.timeout(360000000, new Error('Timeout exceeded'))
@@ -160,14 +194,18 @@ export class DataService {
 	}; 
 
 	sendSampleDoc(CollName:string, NumberDocs: number) : Observable<MongoReadResult> {
+
+		/*
+		Use the Mongopop API to request a sample of the documents from a collection.
+		Returns an Observable which either resolves to the results of the operation
+		or throws an error.
+		*/
+
 		let headers = new Headers({ 'Content-Type': 'application/json' });
 		let options = new RequestOptions({ headers: headers});
 		let sampleDocsRequest = new SampleDocsRequest (this.MongoDBURI, CollName, NumberDocs);
-
-		console.log("About to send " + JSON.stringify(sampleDocsRequest));
-		var docJSON = JSON.stringify(sampleDocsRequest);
-		var url: string = this.baseURL + "sampleDocs";
-		console.log("Sending sampleDocs request: " + docJSON + "to" + url);
+		let docJSON = JSON.stringify(sampleDocsRequest);
+		let url: string = this.baseURL + "sampleDocs";
 
 		return this.http.post(url, sampleDocsRequest, options)
 		.timeout(360000, new Error('Timeout exceeded'))
