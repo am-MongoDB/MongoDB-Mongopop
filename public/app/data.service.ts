@@ -26,7 +26,7 @@ export class DataService {
 
 	fetchServerIP(baseURL: string) : Observable<string> {
 		// Ask the MongoPop API for its IP address
-		return this.http.get(baseURL + "/ip")
+		return this.http.get(baseURL + "ip")
 		.map(response => response.json().ip)
 		.catch((error:any) => Observable.throw(error.json().error || 'Server error'))
 	}
