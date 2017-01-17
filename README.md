@@ -1,6 +1,6 @@
 # MongoPop
 
-9th January 2017.
+17th January 2017.
 
 **Not for production**
 
@@ -16,20 +16,19 @@ Includes:
 ## Usage
 
 ```bash
-mkdir mongopop
-git clone https://github.com/andrewjamesmorgan/mongopop.git
-cd mongopop
+git clone git@github.com:am-MongoDB/Mongopop.git
+cd Mongopop
 npm install
 npm run tsc:w
 npm run express
 ```
 
-Browse to `http://localhost:3000/` (or to the IP address or hostname specified in `public/app/app.component.ts`).
+Browse to `http://localhost:3000/` (or to the IP address or hostname specified in `public/app/app.component.ts`) to use the *Angular2* client.
+
+Browse to `http://localhost:3000/react` (or to the IP address or hostname specified in `public/app/app.component.ts`) to use the *ReactJS* client.
 
 ## To be completed
 
-* Add comments
-* Add React web client (might need to fork)?
 * Add Amazon Alexa client?
 * Consider AWS Lambda?
 * Consider iOS Workflow?
