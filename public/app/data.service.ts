@@ -118,7 +118,7 @@ export class DataService {
 		or throws an error.
 		*/
 		let matchObject: Object;
-		let changeObject: Object
+		let changeObject: Object;
 
 		try {
 			matchObject = this.tryParseJSON(matchPattern);
@@ -157,7 +157,7 @@ export class DataService {
 		let headers = new Headers({ 'Content-Type': 'application/json' });
 		let options = new RequestOptions({headers: headers});
 		let countDocsRequest = new CountDocsRequest (this.MongoDBURI, CollName);
-		let docJSON = JSON.stringify(countDocsRequest);
+		// let docJSON = JSON.stringify(countDocsRequest);
 		let url: string = this.baseURL + "countDocs";
 
 		return this.http.post(url, countDocsRequest, options)
