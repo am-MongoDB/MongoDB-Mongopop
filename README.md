@@ -16,7 +16,7 @@ Includes:
 ## Usage
 
 ```bash
-git clone git@github.com:am-MongoDB/Mongopop.git
+git clone git@github.com:am-MongoDB/MongoDB-Mongopop.git
 cd Mongopop
 npm install
 npm run tsc:w
