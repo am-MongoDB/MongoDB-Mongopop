@@ -17,7 +17,7 @@ Includes:
 
 ```bash
 git clone git@github.com:am-MongoDB/MongoDB-Mongopop.git
-cd Mongopop
+cd MongoDB-Mongopop
 npm install
 npm run tsc:w
 npm run express
