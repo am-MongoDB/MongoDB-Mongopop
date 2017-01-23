@@ -3,7 +3,7 @@ This module provides helper methods to allow the application to interact with a 
 */
 
 var MongoClient = require('mongodb').MongoClient;
-var assert = require('assert');
+//var assert = require('assert');
 
 function DB() {
 	this.db = "empty";

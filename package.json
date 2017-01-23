@@ -8,7 +8,7 @@
   "private": false,
 
   "//": "The scripts are used to build, launch and debug both the server and",
-  "//": "client side apps. e.g. `npm run install-all` will install the client and",
+  "//": "client side apps. e.g. `npm install` will install the client and",
   "//": "server-side dependencies",
 
   "scripts": {
@@ -18,7 +18,6 @@
     "tsc:w": "cd public && npm run tsc:w",
     "express": "node ./bin/www",
     "express-debug": "node-debug ./bin/www",
-    "install-all": "npm install && cd public && npm install",
     "postinstall": "cd public && npm install"
   },
 
