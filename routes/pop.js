@@ -3,7 +3,6 @@ Defines and implements the Mongopop Restful API by adding 'get' and 'post'
 routes to the router.
 */
 
-var MongoClient	= require('mongodb').MongoClient;
 var getIP = require('external-ip')();
 var request = require("request");
 var express = require('express');

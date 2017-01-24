@@ -3,10 +3,9 @@ This module provides helper methods to allow the application to interact with a 
 */
 
 var MongoClient = require('mongodb').MongoClient;
-//var assert = require('assert');
 
 function DB() {
-	this.db = "empty";
+	this.db = null;			// The MongoDB database connection
 }
 
 DB.prototype.connect = function(uri) {
@@ -21,7 +20,8 @@ DB.prototype.connect = function(uri) {
 	// supply a callback function).
 
 	return new Promise(function(resolve, reject) {
-		if (_this.db != "empty") {
+		if (_this.db) {
+			// Already connected
 			resolve();
 		} else {
 			var __this = _this;
@@ -138,31 +138,19 @@ DB.prototype.sampleCollection = function(coll, numberDocs) {
 					{
 						$sample: {size: parseInt(numberDocs)}
 					}],
-					{ cursor: { batchSize: 1 } }
+					{ cursor: { batchSize: 10 } }
 				)
-				var docSet = [];
 
 				// Iterate over the cursor to access each document in the sample
-				// result set
+				// result set. Could use cursor.each() if we wanted to work with
+				// individual documents here.
 
-				cursor.each(function(error, doc) {
+				cursor.toArray(function(error, docArray) {
 			    	if (error) {
-						console.log("Error iterating through cursor: " + error.message);
+						console.log("Error reading fron cursor: " + error.message);
 						reject(error);
 					} else {
-						if (doc) {
-
-							// Store this document in the array of documents which will be passed
-							// back to the caller.
-
-							docSet.push(doc);
-						} else {
-
-							// Reached the end of the cursor and so can resolve the promise, passing
-							// back the new array of documents.
-
-							resolve(docSet);
-						}
+						resolve(docArray);
 					}
 		    	})
 			}
