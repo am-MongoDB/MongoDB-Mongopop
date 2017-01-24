@@ -8,24 +8,21 @@ function count (MongoDBURI, collectionName) {
 	.then(
 		function() {
 			// Make the database call and pass the returned promise to the next stage
-			return database.countDocuments(collectionName)
+			return database.countDocuments(collectionName);
 		},
 		function(err) {
 			console.log("Failed to connect to the database: " + err);
-			return 0;
+			return 0;	// This will automatically be converted into a resolved promise for the
+						// next .then in the chain
 		})
 	// The following `.then` clause uses the promise returned by the previous one.
 	.then(
 		function(count) {
 			console.log(count + " documents");
-			return count;
+			database.close();
 		},
 		function(err) {
 			console.log("Failed to count the documents: " + err);
-			return 0;
-		})
-	.then(
-		function() {
 			database.close();
 		})
 }

@@ -73,13 +73,15 @@ DB.prototype.close = function() {
 	// but then move on. This method returns nothing – the caller can fire
 	// and forget.
 
-	this.db.close()
-	.then(
-		function() {},
-		function(error) {
-			console.log("Failed to close the database: " + error.message)
-		}
-	)
+	if (this.db) {
+		this.db.close()
+		.then(
+			function() {},
+			function(error) {
+				console.log("Failed to close the database: " + error.message)
+			}
+		)	
+	}
 }
 
 DB.prototype.countDocuments = function(coll) {
