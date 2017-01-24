@@ -61,7 +61,7 @@ function requestJSON(requestURL) {
 		request({url: finalDocURL, json: true}, function (error, response, body) {
 		    if (error || response.statusCode != 200) {
 		    	console.log("Failed to fetch documents: " + error.message);
-		    	reject(error);
+		    	reject(error.message);
 		    } else {
 		    	resolve(body);
 		    }
@@ -135,7 +135,7 @@ router.post('/addDocs', function(req, res, next) {
 									resultObject = {
 										"success": false,
 										"count": batchesCompleted,
-										"error": "Failed to write mock data: " + error.message
+										"error": "Failed to write mock data: " + error
 									};
 
 									// Include "return" to end execution of this function
@@ -167,7 +167,7 @@ router.post('/addDocs', function(req, res, next) {
 							resultObject = {
 								"success": false,
 								"count": batchesCompleted,
-								"error": "Failed to fetch mock data: " + error.message
+								"error": "Failed to fetch mock data: " + error
 							};
 							return res.json(resultObject);
 						}
@@ -208,7 +208,7 @@ router.post('/addDocs', function(req, res, next) {
 								resultObject = {
 									"success": false,
 									"count": 0, // If some writes succeeded then the real count may be > 0
-									"error": "Failed to write data: " + error.message
+									"error": "Failed to write data: " + error
 								};
 								return res.json(resultObject);
 							}
@@ -219,7 +219,7 @@ router.post('/addDocs', function(req, res, next) {
 						resultObject = {
 							"success": false,
 							"count": 0,
-							"error": "Failed to fetch mock data: " + error.message
+							"error": "Failed to fetch mock data: " + error
 						};
 						return res.json(resultObject);
 					}
@@ -230,7 +230,7 @@ router.post('/addDocs', function(req, res, next) {
 			resultObject = {
 						"success": false,
 						"count": 0,
-						"error": "Failed to connect to database: " + error.message
+						"error": "Failed to connect to database: " + error
 					};
 			return res.json(resultObject);
 		}
@@ -271,7 +271,7 @@ router.post('/sampleDocs', function(req, res, next) {
 			resultObject = {
 					"success": false,
 					"count": 0,
-					"error": "Failed to connect to database: " + error.message
+					"error": "Failed to connect to database: " + error
 				};
 			return res.json(resultObject);
 		})
@@ -284,11 +284,11 @@ router.post('/sampleDocs', function(req, res, next) {
 				};
 		},
 		function(error) {
-			console.log('Failed to retrieve sample data: ' + error.message);
+			console.log('Failed to retrieve sample data: ' + error);
 			return {
 					"success": false,
 					"documents": null,
-					"error": "Failed to retrieve sample data: " + error.message
+					"error": "Failed to retrieve sample data: " + error
 				};
 		})
 	.then(
@@ -327,11 +327,11 @@ router.post('/countDocs', function(req, res, next) {
 			return database.countDocuments(requestBody.collectionName)
 		},
 		function(err) {
-			console.log("Failed to connect to the database: " + err.message);
+			console.log("Failed to connect to the database: " + err);
 			return {
 					"success": false,
 					"count": 0,
-					"error": "Failed to connect to the database: " + err.message
+					"error": "Failed to connect to the database: " + err
 				};
 		})
 	.then(
@@ -343,11 +343,11 @@ router.post('/countDocs', function(req, res, next) {
 				};
 		},
 		function(err) {
-			console.log("Failed to count the documents: " + err.message);
+			console.log("Failed to count the documents: " + err);
 			return {
 					"success": false,
 					"count": 0,
-					"error": "Failed to count the documents: " + err.message
+					"error": "Failed to count the documents: " + err
 				};
 		})
 	.then(
@@ -419,11 +419,11 @@ router.post('/updateDocs', function(req, res, next) {
 							};
 				},
 				function(error) {
-					console.log("Error updating documents" + error.message);
+					console.log("Error updating documents" + error);
 					return {
 								"success": false,
 								"count": 0,
-								"error": "Error updating documents: " + error.message
+								"error": "Error updating documents: " + error
 							};
 				}
 			)
@@ -435,11 +435,11 @@ router.post('/updateDocs', function(req, res, next) {
 			)
 		},
 		function(error) {
-			console.log("Failed to connect to the database: " + error.message);
+			console.log("Failed to connect to the database: " + error);
 			resultObject = {
 						"success": false,
 						"count": 0,
-						"error": "Failed to connect to the database: " + error.message
+						"error": "Failed to connect to the database: " + error
 					};
 			res.json(resultObject);	
 		}

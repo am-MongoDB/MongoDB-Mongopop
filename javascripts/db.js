@@ -13,7 +13,7 @@ DB.prototype.connect = function(uri) {
 	// Connect to the database specified by the connect string / uri
 	
 	// Trick to cope with the fact that "this" will refer to a different
-	// object once in the callback function.
+	// object once in the promise's function.
 	var _this = this;
 	
 	// This method returns a javascript promise (rather than having the caller
@@ -59,7 +59,7 @@ DB.prototype.connect = function(uri) {
 					// Indicate to the caller that the request failed and pass back
 					// the error that was returned from "connect"
 
-					reject(err);
+					reject(err.message);
 				}
 			)
 		}
@@ -77,7 +77,7 @@ DB.prototype.close = function() {
 	.then(
 		function() {},
 		function(error) {
-			console.log("Failed to close the database: " + error)
+			console.log("Failed to close the database: " + error.message)
 		}
 	)
 }
@@ -91,13 +91,13 @@ DB.prototype.countDocuments = function(coll) {
 
 	return new Promise(function (resolve, reject){
 
-		// {strict:true} means that the call operation will fail if the collection
+		// {strict:true} means that the count operation will fail if the collection
 		// doesn't yet exist
 
 		_this.db.collection(coll, {strict:true}, function(error, collection){
 			if (error) {
 				console.log("Could not access collection: " + error.message);
-				reject(error);
+				reject(error.message);
 			} else {
 				collection.count()
 				.then(
@@ -109,7 +109,7 @@ DB.prototype.countDocuments = function(coll) {
 						console.log("countDocuments failed: " + err.message);
 						// Reject the promise with the error passed back by the count
 						// function
-						reject(err);
+						reject(err.message);
 					}
 				)
 			}
@@ -129,7 +129,7 @@ DB.prototype.sampleCollection = function(coll, numberDocs) {
 		_this.db.collection(coll, {strict:true}, function(error, collection){
 			if (error) {
 				console.log("Could not access collection: " + error.message);
-				reject(error);
+				reject(error.message);
 			} else {
 
 				// Create a cursor from the aggregation request
@@ -148,7 +148,7 @@ DB.prototype.sampleCollection = function(coll, numberDocs) {
 				cursor.toArray(function(error, docArray) {
 			    	if (error) {
 						console.log("Error reading fron cursor: " + error.message);
-						reject(error);
+						reject(error.message);
 					} else {
 						resolve(docArray);
 					}
@@ -171,7 +171,7 @@ DB.prototype.updateCollection = function(coll, pattern, update) {
 		_this.db.collection(coll, {strict:true}, function(error, collection){
 			if (error) {
 				console.log("Could not access collection: " + error.message);
-				reject(error);
+				reject(error.message);
 			} else {
 
 				// Setting the write concern to 1 ({w:1}) means that we don't
@@ -185,8 +185,8 @@ DB.prototype.updateCollection = function(coll, pattern, update) {
 						resolve(result.result.nModified);
 					},
 					function(err) {
-						console.log("updateMany failed: " + err);
-						reject(err);
+						console.log("updateMany failed: " + err.message);
+						reject(err.message);
 					}
 				)
 			}
@@ -204,7 +204,7 @@ DB.prototype.popCollection = function(coll, docs) {
 		_this.db.collection(coll, {strict:false}, function(error, collection){
 			if (error) {
 				console.log("Could not access collection: " + error.message);
-				reject(error);
+				reject(error.message);
 			} else {
 
 				// Verify that it's really an array
@@ -224,7 +224,7 @@ DB.prototype.popCollection = function(coll, docs) {
 					try {
 						var _docs = JSON.parse(JSON.stringify(docs));
 					} catch(trap) {
-						reject({"message": "Array elements are not valid JSON"});
+						reject("Array elements are not valid JSON");
 					}
 
 					collection.insertMany(_docs)
@@ -234,7 +234,7 @@ DB.prototype.popCollection = function(coll, docs) {
 						},
 						function(err) {
 							console.log("Failed to insert Docs: " + err.message);
-							reject(err);
+							reject(err.message);
 						}
 					)
 				}
