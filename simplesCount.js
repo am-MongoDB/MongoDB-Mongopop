@@ -11,9 +11,7 @@ function count (MongoDBURI, collectionName) {
 			return database.countDocuments(collectionName);
 		},
 		function(err) {
-			console.log("Failed to connect to the database: " + err);
-			return 0;	// This will automatically be converted into a resolved promise for the
-						// next .then in the chain
+			throw("Failed to connect to the database: " + err);
 		})
 	// The following `.then` clause uses the promise returned by the previous one.
 	.then(

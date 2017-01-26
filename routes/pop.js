@@ -7,8 +7,8 @@ var getIP = require('external-ip')();
 var request = require("request");
 var express = require('express');
 var router 	= express.Router();
-const util 	= require('util');
 
+var config = require('../config.js');
 var DB = require('../javascripts/db');
 
 var publicIP; // IP address of the server running the Mongopop service
@@ -16,13 +16,13 @@ var title = "MongoPop – Populate your MongoDB (Atlas) Database"
 
 getIP(function (err, ip) {
 
-	// Returns the IP address of the server where the Mongopop service is running
+	// Sets the IP address of the server where the Mongopop service is running
 
     if (err) {
     	console.log("Failed to retrieve IP address: " + err.message);
         throw err;
     }
-    console.log("Mongopop API running on " + ip + ":3000");
+    console.log("Mongopop API running on " + ip + ":" + config.expressPort);
     publicIP = ip;
 });
 
@@ -33,7 +33,7 @@ router.get('/', function(req, res, next) {
 
 	var testObject = {
 		"AppName": "MongoPop",
-		"Version": 0.4
+		"Version": 1.0
 	}
 	var testString = JSON.stringify(testObject);
 	res.json(testObject);
@@ -45,6 +45,10 @@ router.get('/ip', function(req, res, next) {
 
 	res.json({"ip":publicIP});
 });
+
+router.get('/config', function(req, res, next) {
+	res.json(config.client);
+})
 
 function requestJSON(requestURL) {
 
@@ -123,7 +127,7 @@ router.post('/addDocs', function(req, res, next) {
 							database.popCollection(requestBody.collectionName, docs)
 							.then(
 								function(results) {
-									batchesCompleted++;
+									return batchesCompleted++;
 								},
 								function(error) {
 
@@ -138,9 +142,8 @@ router.post('/addDocs', function(req, res, next) {
 										"error": "Failed to write mock data: " + error
 									};
 
-									// Include "return" to end execution of this function
-
-									return res.json(resultObject);
+									res.json(resultObject);
+									throw(false);
 								}
 							)
 							.then(
@@ -157,9 +160,10 @@ router.post('/addDocs', function(req, res, next) {
 												"count": batchesCompleted,
 												"error": ""
 											};
-										return res.json(resultObject);
+										res.json(resultObject);
 									}
-								}
+								},
+								function(error) {}
 							)
 						},
 						function(error) {
@@ -169,7 +173,7 @@ router.post('/addDocs', function(req, res, next) {
 								"count": batchesCompleted,
 								"error": "Failed to fetch mock data: " + error
 							};
-							return res.json(resultObject);
+							res.json(resultObject);
 						}
 					)
 				}
@@ -201,7 +205,7 @@ router.post('/addDocs', function(req, res, next) {
 									"count": requestBody.numberDocs,
 									"error": ""
 								};
-								return res.json(resultObject);
+								res.json(resultObject);
 							},
 							function(error) {
 								database.close();
@@ -210,7 +214,7 @@ router.post('/addDocs', function(req, res, next) {
 									"count": 0, // If some writes succeeded then the real count may be > 0
 									"error": "Failed to write data: " + error
 								};
-								return res.json(resultObject);
+								res.json(resultObject);
 							}
 						)
 					},
@@ -221,7 +225,7 @@ router.post('/addDocs', function(req, res, next) {
 							"count": 0,
 							"error": "Failed to fetch mock data: " + error
 						};
-						return res.json(resultObject);
+						res.json(resultObject);
 					}
 				)
 			}
@@ -232,7 +236,7 @@ router.post('/addDocs', function(req, res, next) {
 						"count": 0,
 						"error": "Failed to connect to database: " + error
 					};
-			return res.json(resultObject);
+			res.json(resultObject);
 		}
 	)
 })
@@ -263,18 +267,13 @@ router.post('/sampleDocs', function(req, res, next) {
 	database.connect(requestBody.MongoDBURI)
 	.then(
 		function() {
+			// Returning will pass the promise returned by sampleCollection to
+			// the next .then in the chain
 			return database.sampleCollection(
 				requestBody.collectionName,
 				requestBody.numberDocs)
-		},
-		function(error) {
-			resultObject = {
-					"success": false,
-					"count": 0,
-					"error": "Failed to connect to database: " + error
-				};
-			return res.json(resultObject);
-		})
+		}) 	// No function is provided to handle the connection failing and so that
+			// error will flow through to the next .then
 	.then(
 		function(docs) {
 			return {
@@ -325,14 +324,6 @@ router.post('/countDocs', function(req, res, next) {
 	.then(
 		function() {
 			return database.countDocuments(requestBody.collectionName)
-		},
-		function(err) {
-			console.log("Failed to connect to the database: " + err);
-			return {
-					"success": false,
-					"count": 0,
-					"error": "Failed to connect to the database: " + err
-				};
 		})
 	.then(
 		function(count) {
