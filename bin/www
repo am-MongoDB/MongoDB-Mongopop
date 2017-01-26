@@ -10,7 +10,7 @@
  */
 
 
-// Location of the main express application module (`Mongopop/app.js`)
+// Location of the main express application module (`app.js`)
 var app = require('../app');
 
 var debug = require('debug')('test:server');
