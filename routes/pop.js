@@ -16,7 +16,7 @@ var title = "MongoPop – Populate your MongoDB (Atlas) Database"
 
 getIP(function (err, ip) {
 
-	// Sets the IP address of the server where the Mongopop service is running
+	// Stores the IP address of the server where the Mongopop service is running
 
     if (err) {
     	console.log("Failed to retrieve IP address: " + err.message);
@@ -35,7 +35,6 @@ router.get('/', function(req, res, next) {
 		"AppName": "MongoPop",
 		"Version": 1.0
 	}
-	var testString = JSON.stringify(testObject);
 	res.json(testObject);
 });
 

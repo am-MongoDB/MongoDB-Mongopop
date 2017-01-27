@@ -33,7 +33,7 @@ DB.prototype.connect = function(uri) {
 				function(database) {
 					
 					// The first function provided as a parameter to "then"
-					// is called if the promise is resolved successfully. The 
+					// is called if the promise is resolved successfuly. The 
 					// "connect" method returns the new database connection
 					// which the code in this function sees as the "database"
 					// parameter
