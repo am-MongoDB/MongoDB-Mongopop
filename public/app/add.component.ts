@@ -19,12 +19,12 @@ export class AddComponent implements OnInit {
 
 	AddDocError: string = "";
 	AddDocResult: string = "";
-	MockarooURL: string = "http://www.mockaroo.com/536ecbc0/download?count=1000&key=48da1ee0";
 	docsToAdd: number = 1;
 
 	// Parameters sent down from the parent component (AppComponent)
 	@Input() dataService: DataService;
 	@Input() MongoDBCollectionName: string;
+	@Input() MockarooURL: string;
 
 	// Event emitters to pass changes back up to the parent component
 	@Output() onCollection = new EventEmitter<string>();

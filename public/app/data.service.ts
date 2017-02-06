@@ -10,6 +10,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
 import { MongoResult } 								from './MongoResult'; 
+import { ClientConfig }								from './ClientConfig';
 import { AddDocsRequest } 							from './AddDocsRequest';
 import { SampleDocsRequest } 						from './SampleDocsRequest';
 import { MongoReadResult } 							from './MongoReadResult';
@@ -20,23 +21,27 @@ import { CountDocsRequest } 						from './CountDocsRequest';
 export class DataService {
 
 	private MongoDBURI: string;	// The URI to use when accessing the MongoDB database
-	private baseURL: string;	// The URL for the Mongopop service
+	private baseURL: string = "http://localhost:3000/pop/";	// The URL for the Mongopop service
 
-	constructor (private http: Http) {}
+	constructor (private http: Http) {
+	}
 
-	fetchServerIP(baseURL: string) : Observable<string> {
+	fetchServerIP() : Observable<string> {
+
 		// Ask the MongoPop API for its IP address
-		return this.http.get(baseURL + "ip")
+		return this.http.get(this.baseURL + "ip")
 		.map(response => response.json().ip)
+		.catch((error:any) => Observable.throw(error.json().error || 'Server error'))
+	}
+
+	fetchClientConfig() : Observable<ClientConfig> {
+		return this.http.get(this.baseURL + "config")
+		.map(response => response.json())
 		.catch((error:any) => Observable.throw(error.json().error || 'Server error'))
 	}
 
 	setMongoDBURI(MongoDBURI: string) {
 		this.MongoDBURI = MongoDBURI;
-	}
-
-	setBaseURL(baseURL: string) {
-		this.baseURL = baseURL;
 	}
 
 	calculateMongoDBURI(dbInputs: any): {"MongoDBURI": string, "MongoDBURIRedacted": string}

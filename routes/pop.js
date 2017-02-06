@@ -12,7 +12,6 @@ var config = require('../config.js');
 var DB = require('../javascripts/db');
 
 var publicIP; // IP address of the server running the Mongopop service
-var title = "MongoPop – Populate your MongoDB (Atlas) Database"
 
 getIP(function (err, ip) {
 
@@ -42,7 +41,7 @@ router.get('/ip', function(req, res, next) {
 
 	// Sends a response with the IP address of the server running this service.
 
-	res.json({"ip":publicIP});
+	res.json({"ip": publicIP});
 });
 
 router.get('/config', function(req, res, next) {

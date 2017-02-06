@@ -19,19 +19,16 @@ export class AppComponent implements OnInit {
 	serverIP: string = "";
 	MongoDBURIRedacted = "";	// The MongoDB URI but with the user password hidden
 	DataToPlayWith: boolean = false;
-	dBInputs = {MongoDBBaseURI: "mongodb://localhost:27017",
-				MongoDBDatabaseName: "mongopop",
+	dBInputs = {MongoDBBaseURI: "",
+				MongoDBDatabaseName: "",
 				MongoDBUser: "",
 				MongoDBUserPassword: "",
 				MongoDBSocketTimeout: 30,
 				MongoDBConnectionPoolSize: 20};
-	MongoDBCollectionName: string = "simples";
+	MongoDBCollectionName: string;
+	defaultMockarooURI: string;
 
 	dBURI = {MongoDBURI: "Not set yet", MongoDBURIRedacted: "Not set yet"};
-
-	// Where to find the Mongopop API (would replace this with the public URL)
-	// private baseURL = 'http://192.168.1.116:3000/pop/';
-	private baseURL = 'http://localhost:3000/pop/';
 
 	constructor (private dataService: DataService) {}
 
@@ -41,21 +38,33 @@ export class AppComponent implements OnInit {
 		// Find the IP address of the server hosting the Mongopop API.
 		// fetchServerIP returns an observable which we subscribe to and 
 		// await the results.
-		this.dataService.fetchServerIP(this.baseURL).subscribe(
+		this.dataService.fetchServerIP().subscribe(
 		results => {
 			// This code is invoked if/when the observable is resolved sucessfully
 			this.serverIP = results
 		},
 		error => {
 			// This code is executed if/when the observable throws an error.
-			console.log("Failed to find an IP address for " + this.baseURL +
-				"; will use 127.0.0.1 instead. Reason: " + error.toString);
+			console.log("Failed to find an IP address; will use 127.0.0.1 instead. Reason: " + error.toString);
 		});
 
-		// Store the calculated MongoDB URI both in this object and the
-		// dataService sub-object.
-		this.dBURI = this.dataService.calculateMongoDBURI(this.dBInputs);
-		this.dataService.setBaseURL(this.baseURL);
+		// Fetch the default client config from the back-end
+
+		this.dataService.fetchClientConfig().subscribe(
+		results => {
+			// This code is invoked if/when the observable is resolved sucessfully
+			this.dBInputs.MongoDBBaseURI = results.mongodb.defaultUri;
+			this.dBInputs.MongoDBDatabaseName = results.mongodb.defaultDatabase;
+			this.MongoDBCollectionName = results.mongodb.defaultCollection;
+			this.defaultMockarooURI = results.mockarooUrl;
+			// Store the calculated MongoDB URI both in this object and the
+			// dataService sub-object.
+			this.dBURI = this.dataService.calculateMongoDBURI(this.dBInputs);
+		},
+		error => {
+			// This code is executed if/when the observable throws an error.
+			console.log("Failed to fetch client content data. Reason: " + error.toString);
+		});
 	}
 
 	setMongoDBSocketTimeout(timeout: number) {
