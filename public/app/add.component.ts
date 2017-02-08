@@ -44,7 +44,6 @@ export class AddComponent implements OnInit {
 				if (results.success) {
 					this.AddDocResult = 'Addded ' + results.count + ',000 documents';
 					this.MongoDBCollectionName = CollName;
-
 					// Let the parent component know that the collection name
 					// has been changed.
 					this.onCollection.emit(this.MongoDBCollectionName);

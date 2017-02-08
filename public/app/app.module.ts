@@ -37,7 +37,6 @@ import { DataService }		from './data.service';
 		DataService
 		],
 
-
 	// Load the module defined in `app.component.js(ts)`
 	bootstrap: [AppComponent]
 })
