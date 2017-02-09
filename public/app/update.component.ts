@@ -45,13 +45,13 @@ export class UpdateComponent implements OnInit {
 						this.MongoDBCollectionName = collName;
 						this.onCollection.emit(this.MongoDBCollectionName);
 					} else {
-						this.JSONError = "Update failed: " + data.error;
+						this.JSONError = "Application Error: " + data.error;
 						this.UpdateDocResult = ""
 					}
 				},
 				error => {
 					// Invoked if/when the observable throws an error
-					this.JSONError = "Update failed: " + error.toString;
+					this.JSONError = "Network Error: " + error.toString;
 					this.UpdateDocResult = ""
 				},
 				() => {console.log("Empty Results");}

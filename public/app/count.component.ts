@@ -1,12 +1,12 @@
-import { Component, OnInit, Injectable, EventEmitter, Input, Output} 	from '@angular/core';
-import { Response } 													from '@angular/http';
-import { Observable, Subscription } 										from 'rxjs/Rx';
+import { Component, OnInit, Injectable, EventEmitter, Input, Output} from '@angular/core';
+import { Response } from '@angular/http';
+import { Observable, Subscription }	from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
-import {DataService}													from './data.service';
+import {DataService} from './data.service';
 
-// This component will be loaded into the <my-add> element of `app/app.component.html`
+// This component will be loaded into the <my-count> element of `app/app.component.html`
 
 @Component({
     selector: 'my-count',
@@ -36,7 +36,8 @@ export class CountComponent implements OnInit {
 		this.CountDocError = "";
 
 		this.dataService.sendCountDocs(CollName)
-		.subscribe(results => {
+		.subscribe(
+			results => {
 			// Invoked if/when the observable is succesfully resolved
 			if (results.success) {
 				this.DocumentCount = "Collection '" + CollName 
@@ -45,9 +46,14 @@ export class CountComponent implements OnInit {
 				this.onCollection.emit(this.MongoDBCollectionName);
 			}
 			else {
-				// Invoked if/when the observable throws an error
-				this.CountDocError = "Error: " + results.error;
+				// Invoked if/when the back-end sucessfully sends a response
+				// but that response indicates an application-level error
+				this.CountDocError = "Application Error: " + results.error;
 			}
+		},
+		error => {
+			// Invoked if/when the observable throws an error
+			this.CountDocError = "Network Error: " + error;
 		})
 	}
 }

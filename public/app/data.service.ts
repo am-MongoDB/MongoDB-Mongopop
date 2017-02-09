@@ -101,8 +101,6 @@ export class DataService {
 	sendUpdateDocs(doc: UpdateDocsRequest) : Observable<MongoResult> {
 		let headers = new Headers({ 'Content-Type': 'application/json' });
 		let options = new RequestOptions({ headers: headers });
-
-		let docJSON = JSON.stringify(doc);
 		let url: string = this.baseURL + "updateDocs";
 
 		return this.http.post(url, doc, options)
@@ -157,12 +155,18 @@ export class DataService {
 		/*
 		Use the Mongopop API to count the number of documents in the specified
 		collection.
+		It returns an Observable that delivers objects of type MongoResult.
 		*/
 
+		
+		// Need to indicate that the request parameters will be in the form
+		// of a JSON document
 		let headers = new Headers({ 'Content-Type': 'application/json' });
 		let options = new RequestOptions({headers: headers});
+
+		// The CountDocsRequest class contains the same elements as the 
+		// `pop/count` REST API POST method expects to receive
 		let countDocsRequest = new CountDocsRequest (this.MongoDBURI, CollName);
-		// let docJSON = JSON.stringify(countDocsRequest);
 		let url: string = this.baseURL + "countDocs";
 
 		return this.http.post(url, countDocsRequest, options)
@@ -187,7 +191,6 @@ export class DataService {
 		let headers = new Headers({ 'Content-Type': 'application/json' });
 		let options = new RequestOptions({ headers: headers });
 		let addDocsRequest = new AddDocsRequest (this.MongoDBURI, CollName, DocURL, DocCount, Unique);
-		let docJSON = JSON.stringify(addDocsRequest);
 		let url: string = this.baseURL + "addDocs";
 
 		return this.http.post(url, addDocsRequest, options)
@@ -209,7 +212,6 @@ export class DataService {
 		let headers = new Headers({ 'Content-Type': 'application/json' });
 		let options = new RequestOptions({ headers: headers});
 		let sampleDocsRequest = new SampleDocsRequest (this.MongoDBURI, CollName, NumberDocs);
-		let docJSON = JSON.stringify(sampleDocsRequest);
 		let url: string = this.baseURL + "sampleDocs";
 
 		return this.http.post(url, sampleDocsRequest, options)

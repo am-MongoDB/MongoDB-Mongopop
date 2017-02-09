@@ -48,12 +48,12 @@ export class AddComponent implements OnInit {
 					// has been changed.
 					this.onCollection.emit(this.MongoDBCollectionName);
 				} else {
-					this.AddDocError = 'Error: ' + results.error;
+					this.AddDocError = 'Application Error: ' + results.error;
 				}
 			},
 			error => {
 				// Invoked if/when the observable throws an error
-				this.AddDocError = "Add failed: " + error.toString;
+				this.AddDocError = "Network Error: " + error.toString;
 			}
 		);
 	}

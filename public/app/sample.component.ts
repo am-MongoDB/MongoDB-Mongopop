@@ -54,12 +54,12 @@ export class SampleComponent implements OnInit {
 					this.onSample.emit(true);
 					this.onCollection.emit(this.MongoDBCollectionName);
 				} else {
-					this.SampleDocError = "Failed to get sample: " + results.error;
+					this.SampleDocError = "Application Error: " + results.error;
 				}
 			},
 			error => {
 				// Invoked if/when the observable throws an error
-				this.SampleDocError = "Sample failed: " + error.toString;
+				this.SampleDocError = "Network Error: " + error.toString;
 			}
 		);
 	}
