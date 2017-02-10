@@ -1,9 +1,9 @@
-import { Component, OnInit, Injectable } 	from '@angular/core';
-import { Observable, Subscription } 		from 'rxjs/Rx';
+import { Component, OnInit, Injectable } from '@angular/core';
+import { Observable, Subscription } from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
-import { DataService }						from './data.service';
+import { DataService } from './data.service';
 
 @Component({
 	// This component will be loaded into the <my-app> element of `../index.html`

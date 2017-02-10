@@ -4,7 +4,7 @@ import {Observable, Subscription} from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
-import {DataService}	from './data.service';
+import {DataService} from './data.service';
 
 // This component will be loaded into the <my-add> element of `app/app.component.html`
 
