@@ -55,20 +55,30 @@ export class DataService {
 		let MongoDBURIRedacted: string;
 
 		if (dbInputs.MongoDBBaseURI == "mongodb://localhost:27017") {
-			MongoDBURI = dbInputs.MongoDBBaseURI + "/" 
-			+ dbInputs.MongoDBDatabaseName + "?authSource=admin&socketTimeoutMS=" + dbInputs.MongoDBSocketTimeout*1000 + "&maxPoolSize=" + dbInputs.MongoDBConnectionPoolSize;
+			MongoDBURI = dbInputs.MongoDBBaseURI
+				+ "/" + dbInputs.MongoDBDatabaseName
+				+ "?authSource=admin&socketTimeoutMS="
+				+ dbInputs.MongoDBSocketTimeout*1000
+				+ "&maxPoolSize="
+				+ dbInputs.MongoDBConnectionPoolSize;
 			MongoDBURIRedacted = dbInputs.MongoDBBaseURI;
 		} else {
 			// Can now assume that the URI is in the format provided by MongoDB Atlas
 			dbInputs.MongoDBUser = dbInputs.MongoDBBaseURI.split('mongodb://')[1].split(':')[0];
 			MongoDBURI = dbInputs.MongoDBBaseURI
 				.replace('admin', dbInputs.MongoDBDatabaseName)
-				.replace('PASSWORD', dbInputs.MongoDBUserPassword) + "&socketTimeoutMS=" + dbInputs.MongoDBSocketTimeout*1000
-					+ "&maxPoolSize=" + dbInputs.MongoDBConnectionPoolSize;
+				.replace('PASSWORD', dbInputs.MongoDBUserPassword)
+				+ "&socketTimeoutMS="
+				+ dbInputs.MongoDBSocketTimeout*1000
+				+ "&maxPoolSize="
+				+ dbInputs.MongoDBConnectionPoolSize;
 			MongoDBURIRedacted = dbInputs.MongoDBBaseURI
 				.replace('admin', dbInputs.MongoDBDatabaseName)
-				.replace('PASSWORD', "**********") + 
-				+ "&socketTimeoutMS=" + dbInputs.MongoDBSocketTimeout*1000 + "&maxPoolSize=" + dbInputs.MongoDBConnectionPoolSize;
+				.replace('PASSWORD', "**********")
+				+ "&socketTimeoutMS="
+				+ dbInputs.MongoDBSocketTimeout*1000
+				+ "&maxPoolSize="
+				+ dbInputs.MongoDBConnectionPoolSize;
 		}
 
 		this.setMongoDBURI(MongoDBURI);
