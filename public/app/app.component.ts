@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
 		// await the results.
 		this.dataService.fetchServerIP().subscribe(
 		results => {
-			// This code is invoked if/when the observable is resolved sucessfully
+			// This code is invoked if/when the observable is resolved successfully
 			this.serverIP = results
 		},
 		error => {
@@ -52,7 +52,7 @@ export class AppComponent implements OnInit {
 
 		this.dataService.fetchClientConfig().subscribe(
 		results => {
-			// This code is invoked if/when the observable is resolved sucessfully
+			// This code is invoked if/when the observable is resolved successfully
 			this.dBInputs.MongoDBBaseURI = results.mongodb.defaultUri;
 			this.dBInputs.MongoDBDatabaseName = results.mongodb.defaultDatabase;
 			this.MongoDBCollectionName = results.mongodb.defaultCollection;

@@ -66,15 +66,15 @@ export class DataService {
 			// Can now assume that the URI is in the format provided by MongoDB Atlas
 			dbInputs.MongoDBUser = dbInputs.MongoDBBaseURI.split('mongodb://')[1].split(':')[0];
 			MongoDBURI = dbInputs.MongoDBBaseURI
-				.replace('admin', dbInputs.MongoDBDatabaseName)
-				.replace('PASSWORD', dbInputs.MongoDBUserPassword)
+				.replace('<DATABASE>', dbInputs.MongoDBDatabaseName)
+				.replace('<PASSWORD>', dbInputs.MongoDBUserPassword)
 				+ "&socketTimeoutMS="
 				+ dbInputs.MongoDBSocketTimeout*1000
 				+ "&maxPoolSize="
 				+ dbInputs.MongoDBConnectionPoolSize;
 			MongoDBURIRedacted = dbInputs.MongoDBBaseURI
-				.replace('admin', dbInputs.MongoDBDatabaseName)
-				.replace('PASSWORD', "**********")
+				.replace('<DATABASE>', dbInputs.MongoDBDatabaseName)
+				.replace('<PASSWORD>', "**********")
 				+ "&socketTimeoutMS="
 				+ dbInputs.MongoDBSocketTimeout*1000
 				+ "&maxPoolSize="
