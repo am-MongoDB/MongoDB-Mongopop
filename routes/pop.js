@@ -486,7 +486,6 @@ router.post('/addDoc', function(req, res, next) {
 	)
 })
 
-
 router.post('/checkIn', function(req, res, next) {
 
 	/* Request from client to add  a sample of the documents from a collection; the request
