@@ -274,6 +274,33 @@ DB.prototype.addDocument = function(coll, document) {
 	})
 }
 
+DB.prototype.mostRecentDocument = function(coll) {
+	
+	// Return a promise that either resolves with the most recent doducment
+	// from the collection (based on a reverse sort on `_id` or is rejected with the error
+	// received from the database.
+
+	var _this=this;
+
+	return new Promise(function (resolve, reject) {
+		_this.db.collection(coll, {strict:false}, function(error, collection){
+			if (error) {
+				console.log("Could not access collection: " + error.message);
+				reject(error.message);
+			} else {
+				var cursor = collection.find({}).sort({_id: -1}).limit(1);
+				cursor.toArray(function(error, docArray) {
+			    	if (error) {
+						console.log("Error reading fron cursor: " + error.message);
+						reject(error.message);
+					} else {
+						resolve(docArray[0]);
+					}
+		    	})
+			}
+		})
+	})
+}
 
 // Make the module available for use in other files
 module.exports = DB;

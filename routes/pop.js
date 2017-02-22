@@ -596,4 +596,62 @@ router.get('/checkInCount', function(req, res, next) {
 	)
 })
 
+router.get('/latestCheckIn', function(req, res, next) {
+
+	/* Request from client for the number of checkins
+
+	The response will contain:
+
+	{
+		success: boolean,
+		venue,
+		date,
+		url,
+		location
+		error: string
+	}
+	*/
+
+	var requestBody = req.body;
+	var database = new DB;
+	
+	database.connect(config.makerMongoDBURI)
+	.then(
+		function() {
+
+			// Returning will pass the promise returned by mostRecentDocument to
+			// the next .then in the chain
+			return database.mostRecentDocument(config.checkinCollection)
+		}) 	// No function is provided to handle the connection failing and so that
+			// error will flow through to the next .then
+	.then(
+		function(doc) {
+			return {
+					"success": true,
+					"venue": doc.venueName,
+					"date": doc.date,
+					"url": doc.url,
+					"location": doc.mapRef,
+					"error": ""
+				};
+		},
+		function(error) {
+			console.log('Failed to count documents: ' + error);
+			return {
+					"success": false,
+					"venue": "",
+					"date": "",
+					"url": "",
+					"location": "",
+					"error": "Failed to count document: " + error
+				};
+		})
+	.then(
+		function(resultObject) {
+			database.close();
+			res.json(resultObject);
+		}
+	)
+})
+
 module.exports = router;
