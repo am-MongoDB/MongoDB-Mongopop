@@ -435,4 +435,117 @@ router.post('/updateDocs', function(req, res, next) {
 	);
 })
 
+router.post('/addDoc', function(req, res, next) {
+
+	/* Request from client to add  a sample of the documents from a collection; the request
+	should be of the form:
+
+	{
+		collectionName: string,
+		document: JSON document,
+	}
+
+	The response will contain:
+
+	{
+		success: boolean,
+		error: string
+	}
+	*/
+
+	var requestBody = req.body;
+	var database = new DB;
+	
+	database.connect(config.makerMongoDBURI)
+	.then(
+		function() {
+			// Returning will pass the promise returned by addDoc to
+			// the next .then in the chain
+			return database.addDocument(requestBody.collectionName, requestBody.document)
+		}) 	// No function is provided to handle the connection failing and so that
+			// error will flow through to the next .then
+	.then(
+		function(docs) {
+			return {
+					"success": true,
+					"error": ""
+				};
+		},
+		function(error) {
+			console.log('Failed to add document: ' + error);
+			return {
+					"success": false,
+					"error": "Failed to add document: " + error
+				};
+		})
+	.then(
+		function(resultObject) {
+			database.close();
+			res.json(resultObject);
+		}
+	)
+})
+
+
+router.post('/checkIn', function(req, res, next) {
+
+	/* Request from client to add  a sample of the documents from a collection; the request
+	should be of the form:
+
+	{
+		venue,
+		date,
+		url,
+		location
+	}
+
+	The response will contain:
+
+	{
+		success: boolean,
+		error: string
+	}
+	*/
+
+	var requestBody = req.body;
+	var database = new DB;
+	
+	database.connect(config.makerMongoDBURI)
+	.then(
+		function() {
+
+			var checkIn = {
+				venueName: requestBody.venue,
+				date: requestBody.date,
+				url: requestBody.url,
+				mapRef: requestBody.location
+			}
+
+			// Returning will pass the promise returned by addDoc to
+			// the next .then in the chain
+			return database.addDocument(config.checkinCollection, checkIn)
+		}) 	// No function is provided to handle the connection failing and so that
+			// error will flow through to the next .then
+	.then(
+		function(docs) {
+			return {
+					"success": true,
+					"error": ""
+				};
+		},
+		function(error) {
+			console.log('Failed to add document: ' + error);
+			return {
+					"success": false,
+					"error": "Failed to add document: " + error
+				};
+		})
+	.then(
+		function(resultObject) {
+			database.close();
+			res.json(resultObject);
+		}
+	)
+})
+
 module.exports = router;

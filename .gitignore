@@ -2,5 +2,6 @@ node_modules/
 puplic/app/*.js*
 npm-debug.log
 simpleCount.js
+config.js
 
 

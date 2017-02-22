@@ -245,5 +245,35 @@ DB.prototype.popCollection = function(coll, docs) {
 	})
 }
 
+DB.prototype.addDocument = function(coll, document) {
+	
+	// Return a promise that either resolves or is rejected with the error
+	// received from the database.
+
+	var _this=this;
+
+	return new Promise(function (resolve, reject) {
+		_this.db.collection(coll, {strict:false}, function(error, collection){
+			if (error) {
+				console.log("Could not access collection: " + error.message);
+				reject(error.message);
+			} else {
+
+				collection.insert(document, {w: "majority"})
+				.then(
+					function(result) {
+						resolve();
+					},
+					function(err) {
+						console.log("Insert failed: " + err.message);
+						reject(err.message);
+					}
+				)
+			}
+		})
+	})
+}
+
+
 // Make the module available for use in other files
 module.exports = DB;
