@@ -547,4 +547,53 @@ router.post('/checkIn', function(req, res, next) {
 	)
 })
 
+router.get('/checkInCount', function(req, res, next) {
+
+	/* Request from client for the number of checkins
+
+	The response will contain:
+
+	{
+		success: boolean,
+		count: number,
+		error: string
+	}
+	*/
+
+	var requestBody = req.body;
+	var database = new DB;
+	
+	database.connect(config.makerMongoDBURI)
+	.then(
+		function() {
+
+			// Returning will pass the promise returned by countDocuments to
+			// the next .then in the chain
+			return database.countDocuments(config.checkinCollection)
+		}) 	// No function is provided to handle the connection failing and so that
+			// error will flow through to the next .then
+	.then(
+		function(count) {
+			return {
+					"success": true,
+					"count": count,
+					"error": ""
+				};
+		},
+		function(error) {
+			console.log('Failed to count documents: ' + error);
+			return {
+					"success": false,
+					"count": 0,
+					"error": "Failed to count document: " + error
+				};
+		})
+	.then(
+		function(resultObject) {
+			database.close();
+			res.json(resultObject);
+		}
+	)
+})
+
 module.exports = router;
