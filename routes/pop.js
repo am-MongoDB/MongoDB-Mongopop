@@ -581,11 +581,11 @@ router.get('/checkInCount', function(req, res, next) {
 				};
 		},
 		function(error) {
-			console.log('Failed to count documents: ' + error);
+			console.log('Failed to count checkins: ' + error);
 			return {
 					"success": false,
 					"count": 0,
-					"error": "Failed to count document: " + error
+					"error": "Failed to count checkins: " + error
 				};
 		})
 	.then(
