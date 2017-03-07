@@ -636,14 +636,14 @@ router.get('/latestCheckIn', function(req, res, next) {
 				};
 		},
 		function(error) {
-			console.log('Failed to count documents: ' + error);
+			console.log('Failed to find last checkin: ' + error);
 			return {
 					"success": false,
 					"venue": "",
 					"date": "",
 					"url": "",
 					"location": "",
-					"error": "Failed to count document: " + error
+					"error": "Failed to find last checkin: " + error
 				};
 		})
 	.then(
