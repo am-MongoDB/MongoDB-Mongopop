@@ -276,7 +276,7 @@ DB.prototype.addDocument = function(coll, document) {
 
 DB.prototype.mostRecentDocument = function(coll) {
 	
-	// Return a promise that either resolves with the most recent doducment
+	// Return a promise that either resolves with the most recent docucment
 	// from the collection (based on a reverse sort on `_id` or is rejected with the error
 	// received from the database.
 
