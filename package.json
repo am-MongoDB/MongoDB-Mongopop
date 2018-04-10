@@ -1,11 +1,15 @@
 {
   "//": "This contains the meta data to run the Mongopop application",
 
-  "name": "Mongopop",
+  "name": "mongopop",
   "description": "Adds and manipulates data with MongoDB Atlas or other MongoDB databases",
   "author": "Andrew Morgan andrew.morgan@mongodb.com",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": false,
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/am-MongoDB/MongoDB-Mongopop"
+  }
 
   "//": "The scripts are used to build, launch and debug both the server and",
   "//": "client side apps. e.g. `npm install` will install the client and",
