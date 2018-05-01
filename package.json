@@ -9,7 +9,7 @@
   "repository" : {
     "type" : "git",
     "url" : "https://github.com/am-MongoDB/MongoDB-Mongopop"
-  }
+  },
 
   "//": "The scripts are used to build, launch and debug both the server and",
   "//": "client side apps. e.g. `npm install` will install the client and",
