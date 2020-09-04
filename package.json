@@ -37,7 +37,7 @@
     "external-ip": "^0.2.4",
     "jade": "~1.11.0",
     "methods": "^1.1.2",
-    "mongodb": "^2.2.5",
+    "mongodb": "^3.6.1",
     "morgan": "~1.7.0",
     "pug": "^0.1.0",
     "request": "^2.74.0",
